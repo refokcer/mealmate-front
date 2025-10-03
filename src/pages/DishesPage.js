@@ -230,14 +230,16 @@ export const DishesPage = ({
                     </Button>
                   </div>
                   {dish.products?.length ? (
-                    <ul className="ingredient-list">
+                    <div className="ingredient-tag-list">
                       {dish.products.map((product) => (
-                        <li key={product.productId} className="ingredient-list__item">
-                          <strong>{product.productName}</strong>
-                          {product.quantity && <p className="muted">{product.quantity}</p>}
-                        </li>
+                        <Tag key={product.productId}>
+                          <span className="ingredient-tag__name">{product.productName}</span>
+                          {product.quantity && (
+                            <span className="ingredient-tag__quantity">{product.quantity}</span>
+                          )}
+                        </Tag>
                       ))}
-                    </ul>
+                    </div>
                   ) : (
                     <p className="muted">Ингредиенты ещё не добавлены</p>
                   )}
