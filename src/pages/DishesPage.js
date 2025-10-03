@@ -205,21 +205,20 @@ export const DishesPage = ({
               />
 
               <CardContent>
-                {dish.imageUrl && (
-                  <img src={dish.imageUrl} alt="Блюдо" className="dish-card__image" loading="lazy" />
-                )}
                 <div className="dish-card__info">
-                  {dish.preparationMinutes ? (
-                    <Tag tone="warning">{dish.preparationMinutes} мин.</Tag>
-                  ) : (
-                    <span className="muted">Время готовки не указано</span>
-                  )}
-
                   {dish.instructions ? (
                     <p className="multiline">{dish.instructions}</p>
                   ) : (
                     <p className="muted">Нет инструкций по приготовлению</p>
                   )}
+
+                  <div className="dish-card__meta">
+                    {dish.preparationMinutes ? (
+                      <span className="dish-card__meta-time">{dish.preparationMinutes} мин.</span>
+                    ) : (
+                      <span className="muted">Время готовки не указано</span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="dish-card__ingredients">
