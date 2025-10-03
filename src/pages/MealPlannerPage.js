@@ -6,10 +6,12 @@ import { Modal } from '../components/common/Modal';
 import { FormField, SelectInput, TextInput } from '../components/forms/FormField';
 import { EmptyState } from '../components/common/EmptyState';
 
+const DEFAULT_ACCENT_COLOR = '#ff7e5f';
+
 const defaultGroup = {
   name: '',
   description: '',
-  accentColor: '#ff7e5f',
+  accentColor: DEFAULT_ACCENT_COLOR,
 };
 
 export const MealPlannerPage = ({
@@ -121,6 +123,10 @@ export const MealPlannerPage = ({
         <div className="grid grid--responsive">
           {mealGroups.map((group) => (
             <Card key={group.id} className="meal-group-card">
+              <div
+                className="meal-group-card__accent"
+                style={{ backgroundColor: group.accentColor || DEFAULT_ACCENT_COLOR }}
+              />
               <CardHeader
                 title={group.name}
                 subtitle={group.description}
@@ -144,7 +150,6 @@ export const MealPlannerPage = ({
               />
 
               <CardContent>
-                <div className="meal-group-card__accent" style={{ background: group.accentColor }} />
                 {group.dishes?.length ? (
                   <ul className="chip-list">
                     {group.dishes.map((dish) => (

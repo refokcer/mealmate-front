@@ -62,13 +62,26 @@
 
 .meal-group-card {
   position: relative;
+  overflow: hidden;
 }
 
 .meal-group-card__accent {
-  width: 60px;
-  height: 6px;
-  border-radius: 999px;
-  margin-bottom: var(--space-sm);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  border-radius: var(--radius-2xl);
+  pointer-events: none;
+  z-index: 0;
+  background-color: #ff7e5f;
+}
+
+.meal-group-card .card__header,
+.meal-group-card .card__content,
+.meal-group-card .card__footer {
+  position: relative;
+  z-index: 1;
 }
 
 .dish-card__info {
