@@ -51,12 +51,15 @@ function App() {
           <DishesPage
             dishes={planner.dishes}
             products={planner.products}
+            mealGroups={planner.mealGroups}
             createDish={planner.createDish}
             updateDish={planner.updateDish}
             deleteDish={planner.deleteDish}
             createDishProduct={planner.createDishProduct}
             updateDishProduct={planner.updateDishProduct}
             deleteDishProduct={planner.deleteDishProduct}
+            createMealGroupDish={planner.createMealGroupDish}
+            deleteMealGroupDish={planner.deleteMealGroupDish}
             isMutating={planner.isMutating}
           />
         );
