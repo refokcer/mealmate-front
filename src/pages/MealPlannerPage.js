@@ -14,30 +14,6 @@ const defaultGroup = {
   accentColor: DEFAULT_ACCENT_COLOR,
 };
 
-const createAccentGradient = (color) => {
-  const sourceColor = color || DEFAULT_ACCENT_COLOR;
-  const hexMatch = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(sourceColor);
-
-  if (hexMatch) {
-    let hex = hexMatch[1];
-
-    if (hex.length === 3) {
-      hex = hex
-        .split('')
-        .map((char) => `${char}${char}`)
-        .join('');
-    }
-
-    const r = parseInt(hex.slice(0, 2), 16);
-    const g = parseInt(hex.slice(2, 4), 16);
-    const b = parseInt(hex.slice(4, 6), 16);
-
-    return `linear-gradient(90deg, rgba(${r}, ${g}, ${b}, 1) 0%, rgba(${r}, ${g}, ${b}, 0) 100%)`;
-  }
-
-  return `linear-gradient(90deg, ${sourceColor} 0%, transparent 100%)`;
-};
-
 export const MealPlannerPage = ({
   mealGroups,
   dishes,
@@ -149,7 +125,7 @@ export const MealPlannerPage = ({
             <Card key={group.id} className="meal-group-card">
               <div
                 className="meal-group-card__accent"
-                style={{ background: createAccentGradient(group.accentColor) }}
+                style={{ backgroundColor: group.accentColor || DEFAULT_ACCENT_COLOR }}
               />
               <CardHeader
                 title={group.name}
