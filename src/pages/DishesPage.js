@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Card, CardContent, CardFooter, CardHeader } from '../components/common/Card';
+import { useEffect, useMemo, useState } from 'react';
+import { Card, CardContent, CardHeader } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Modal } from '../components/common/Modal';
 import { FormField, SelectInput, TextInput } from '../components/forms/FormField';
@@ -44,6 +44,17 @@ export const DishesPage = ({
     () => products.map((product) => ({ label: product.name, value: String(product.id) })),
     [products],
   );
+
+  useEffect(() => {
+    if (!editingDish) {
+      return;
+    }
+
+    const updatedDish = dishes.find((item) => item.id === editingDish.id);
+    if (updatedDish && updatedDish !== editingDish) {
+      setEditingDish(updatedDish);
+    }
+  }, [dishes, editingDish]);
 
   const openCreateDishModal = () => {
     setEditingDish(null);
@@ -134,6 +145,10 @@ export const DishesPage = ({
     closeIngredientModal();
   };
 
+  const handleDeleteIngredient = async (dishId, productId) => {
+    await deleteDishProduct(dishId, productId);
+  };
+
   const availableProducts = useMemo(() => {
     if (!ingredientForm.dishId) {
       return productOptions;
@@ -190,21 +205,20 @@ export const DishesPage = ({
               />
 
               <CardContent>
-                {dish.imageUrl && (
-                  <img src={dish.imageUrl} alt="Блюдо" className="dish-card__image" loading="lazy" />
-                )}
                 <div className="dish-card__info">
-                  {dish.preparationMinutes ? (
-                    <Tag tone="warning">{dish.preparationMinutes} мин.</Tag>
-                  ) : (
-                    <span className="muted">Время готовки не указано</span>
-                  )}
-
                   {dish.instructions ? (
                     <p className="multiline">{dish.instructions}</p>
                   ) : (
                     <p className="muted">Нет инструкций по приготовлению</p>
                   )}
+
+                  <div className="dish-card__meta">
+                    {dish.preparationMinutes ? (
+                      <span className="dish-card__meta-time">{dish.preparationMinutes} мин.</span>
+                    ) : (
+                      <span className="muted">Время готовки не указано</span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="dish-card__ingredients">
@@ -215,43 +229,21 @@ export const DishesPage = ({
                     </Button>
                   </div>
                   {dish.products?.length ? (
-                    <ul className="ingredient-list">
+                    <div className="ingredient-tag-list">
                       {dish.products.map((product) => (
-                        <li key={product.productId} className="ingredient-list__item">
-                          <div>
-                            <strong>{product.productName}</strong>
-                            {product.quantity && <p className="muted">{product.quantity}</p>}
-                          </div>
-                          <div className="ingredient-list__actions">
-                            <Button
-                              variant="ghost"
-                              onClick={() => openIngredientModal(dish, product)}
-                              disabled={isMutating}
-                            >
-                              Изменить
-                            </Button>
-                            <Button
-                              variant="danger"
-                              onClick={() => deleteDishProduct(dish.id, product.productId)}
-                              disabled={isMutating}
-                            >
-                              Удалить
-                            </Button>
-                          </div>
-                        </li>
+                        <Tag key={product.productId}>
+                          <span className="ingredient-tag__name">{product.productName}</span>
+                          {product.quantity && (
+                            <span className="ingredient-tag__quantity">{product.quantity}</span>
+                          )}
+                        </Tag>
                       ))}
-                    </ul>
+                    </div>
                   ) : (
                     <p className="muted">Ингредиенты ещё не добавлены</p>
                   )}
                 </div>
               </CardContent>
-
-              <CardFooter>
-                <Button variant="ghost" onClick={() => openIngredientModal(dish)}>
-                  Добавить ингредиент
-                </Button>
-              </CardFooter>
             </Card>
           ))}
         </div>
@@ -318,6 +310,48 @@ export const DishesPage = ({
             placeholder="https://..."
           />
         </FormField>
+
+        {editingDish && (
+          <div className="dish-card__ingredients">
+            <div className="section-header">
+              <h3>Ингредиенты</h3>
+              <Button variant="ghost" onClick={() => openIngredientModal(editingDish)} disabled={isMutating}>
+                Добавить
+              </Button>
+            </div>
+
+            {editingDish.products?.length ? (
+              <ul className="ingredient-list">
+                {editingDish.products.map((product) => (
+                  <li key={product.productId} className="ingredient-list__item">
+                    <div>
+                      <strong>{product.productName}</strong>
+                      {product.quantity && <p className="muted">{product.quantity}</p>}
+                    </div>
+                    <div className="ingredient-list__actions">
+                      <Button
+                        variant="ghost"
+                        onClick={() => openIngredientModal(editingDish, product)}
+                        disabled={isMutating}
+                      >
+                        Изменить
+                      </Button>
+                      <Button
+                        variant="danger"
+                        onClick={() => handleDeleteIngredient(editingDish.id, product.productId)}
+                        disabled={isMutating}
+                      >
+                        Удалить
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">Ингредиенты ещё не добавлены</p>
+            )}
+          </div>
+        )}
       </Modal>
 
       <Modal
