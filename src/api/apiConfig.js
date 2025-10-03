@@ -1,4 +1,4 @@
-const DEFAULT_BASE_URL = 'http://localhost:8080';
+const DEFAULT_BASE_URL = 'https://localhost:7252';
 
 export const apiConfig = {
   baseUrl: process.env.REACT_APP_API_BASE_URL || DEFAULT_BASE_URL,
