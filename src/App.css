@@ -44,45 +44,6 @@
   font-size: 1.05rem;
 }
 
-.chip-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-xs);
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.chip-list__item {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-4xs);
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 999px;
-  padding: var(--space-4xs) var(--space-2xs) var(--space-4xs) var(--space-4xs);
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.2);
-}
-
-.chip-list__item--static {
-  padding-right: var(--space-xs);
-}
-
-.chip-list__remove {
-  border: none;
-  background: rgba(148, 163, 184, 0.12);
-  border-radius: 999px;
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-
-.chip-list__remove:hover {
-  background: rgba(248, 113, 113, 0.25);
-  color: rgb(185, 28, 28);
-}
-
 .card-action-buttons {
   display: flex;
   gap: var(--space-xs);
@@ -127,10 +88,6 @@
   gap: var(--space-sm);
 }
 
-.dish-card__ingredient-quantity {
-  font-size: 0.75rem;
-}
-
 .ingredient-list {
   list-style: none;
   padding: 0;
@@ -140,9 +97,8 @@
 }
 
 .ingredient-list__item {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-sm);
+  display: grid;
+  gap: var(--space-3xs);
   padding: var(--space-sm);
   border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.7);
