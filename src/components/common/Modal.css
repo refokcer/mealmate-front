@@ -1,0 +1,64 @@
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+.modal__dialog {
+  position: relative;
+  width: min(640px, calc(100vw - 2 * var(--space-md)));
+  max-height: calc(100vh - 2 * var(--space-xl));
+  border-radius: var(--radius-2xl);
+  background: white;
+  box-shadow: 0 40px 60px rgba(15, 23, 42, 0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal__header {
+  padding: var(--space-lg) var(--space-xl) var(--space-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.modal__title {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.modal__close {
+  border: none;
+  background: rgba(148, 163, 184, 0.15);
+  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.modal__body {
+  padding: 0 var(--space-xl) var(--space-xl);
+  overflow-y: auto;
+  display: grid;
+  gap: var(--space-md);
+}
+
+.modal__footer {
+  padding: var(--space-sm) var(--space-xl) var(--space-xl);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+

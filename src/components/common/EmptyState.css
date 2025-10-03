@@ -1,0 +1,28 @@
+.empty-state {
+  padding: var(--space-xl);
+  border-radius: var(--radius-2xl);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px dashed rgba(148, 163, 184, 0.4);
+  text-align: center;
+  display: grid;
+  gap: var(--space-sm);
+  justify-items: center;
+}
+
+.empty-state__icon {
+  font-size: 2.5rem;
+}
+
+.empty-state__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-strong);
+}
+
+.empty-state__description {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-muted);
+}
+

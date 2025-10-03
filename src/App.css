@@ -1,34 +1,194 @@
-.App {
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.page__title {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--color-text-strong);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.grid--responsive {
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.chip-list__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4xs);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 999px;
+  padding: var(--space-4xs) var(--space-2xs) var(--space-4xs) var(--space-4xs);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.2);
+}
+
+.chip-list__item--static {
+  padding-right: var(--space-xs);
+}
+
+.chip-list__remove {
+  border: none;
+  background: rgba(148, 163, 184, 0.12);
+  border-radius: 999px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.chip-list__remove:hover {
+  background: rgba(248, 113, 113, 0.25);
+  color: rgb(185, 28, 28);
+}
+
+.card-action-buttons {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.muted {
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.multiline {
+  white-space: pre-line;
+  margin: 0;
+}
+
+.meal-group-card {
+  position: relative;
+}
+
+.meal-group-card__accent {
+  width: 60px;
+  height: 6px;
+  border-radius: 999px;
+  margin-bottom: var(--space-sm);
+}
+
+.dish-card__image {
+  width: 100%;
+  border-radius: var(--radius-xl);
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.dish-card__info {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.dish-card__ingredients {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.ingredient-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.ingredient-list__item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.ingredient-list__actions {
+  display: flex;
+  gap: var(--space-2xs);
+}
+
+.product-card__dishes {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.loading-state {
+  display: grid;
+  gap: var(--space-sm);
+  justify-items: center;
+  padding: var(--space-xl) 0;
+  color: var(--color-muted);
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 126, 95, 0.3);
+  border-top-color: var(--color-primary);
+  animation: spinner 1s linear infinite;
+}
+
+.footer-note {
   text-align: center;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  margin: var(--space-xs) 0 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.alert__action {
+  margin-left: var(--space-sm);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+@media (min-width: 768px) {
+  .page__title {
+    font-size: 1.6rem;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
+@keyframes spinner {
   from {
     transform: rotate(0deg);
   }
@@ -36,3 +196,4 @@
     transform: rotate(360deg);
   }
 }
+
