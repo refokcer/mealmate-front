@@ -107,8 +107,9 @@ export const usePlannerData = () => {
       setIsMutating(true);
 
       try {
-        await mutation();
+        const result = await mutation();
         await Promise.all(refreshers.map((ref) => ref()));
+        return result;
       } catch (err) {
         throw handleError(err);
       } finally {
@@ -131,61 +132,61 @@ export const usePlannerData = () => {
       refresh: loadAll,
       clearError,
       async createDish(payload) {
-        await runMutation(() => dishesApi.createDish(payload), [loadDishes]);
+        return runMutation(() => dishesApi.createDish(payload), [loadDishes]);
       },
       async updateDish(id, payload) {
-        await runMutation(() => dishesApi.updateDish(id, payload), [loadDishes]);
+        return runMutation(() => dishesApi.updateDish(id, payload), [loadDishes]);
       },
       async deleteDish(id) {
-        await runMutation(() => dishesApi.deleteDish(id), [loadDishes, loadMealGroups, loadDishProducts]);
+        return runMutation(() => dishesApi.deleteDish(id), [loadDishes, loadMealGroups, loadDishProducts]);
       },
       async createProduct(payload) {
-        await runMutation(() => productsApi.createProduct(payload), [loadProducts]);
+        return runMutation(() => productsApi.createProduct(payload), [loadProducts]);
       },
       async updateProduct(id, payload) {
-        await runMutation(() => productsApi.updateProduct(id, payload), [loadProducts]);
+        return runMutation(() => productsApi.updateProduct(id, payload), [loadProducts]);
       },
       async deleteProduct(id) {
-        await runMutation(() => productsApi.deleteProduct(id), [loadProducts, loadDishes, loadDishProducts]);
+        return runMutation(() => productsApi.deleteProduct(id), [loadProducts, loadDishes, loadDishProducts]);
       },
       async createMealGroup(payload) {
-        await runMutation(() => mealGroupsApi.createMealGroup(payload), [loadMealGroups]);
+        return runMutation(() => mealGroupsApi.createMealGroup(payload), [loadMealGroups]);
       },
       async updateMealGroup(id, payload) {
-        await runMutation(() => mealGroupsApi.updateMealGroup(id, payload), [loadMealGroups]);
+        return runMutation(() => mealGroupsApi.updateMealGroup(id, payload), [loadMealGroups]);
       },
       async deleteMealGroup(id) {
-        await runMutation(() => mealGroupsApi.deleteMealGroup(id), [loadMealGroups, loadMealGroupDishes]);
+        return runMutation(() => mealGroupsApi.deleteMealGroup(id), [loadMealGroups, loadMealGroupDishes]);
       },
       async createDishProduct(payload) {
-        await runMutation(() => dishProductsApi.createDishProduct(payload), [loadDishProducts, loadDishes]);
+        return runMutation(() => dishProductsApi.createDishProduct(payload), [loadDishProducts, loadDishes]);
       },
       async updateDishProduct(dishId, productId, payload) {
-        await runMutation(
+        return runMutation(
           () => dishProductsApi.updateDishProduct(dishId, productId, payload),
           [loadDishProducts, loadDishes],
         );
       },
       async deleteDishProduct(dishId, productId) {
-        await runMutation(
+        return runMutation(
           () => dishProductsApi.deleteDishProduct(dishId, productId),
           [loadDishProducts, loadDishes],
         );
       },
       async createMealGroupDish(payload) {
-        await runMutation(
+        return runMutation(
           () => mealGroupDishesApi.createMealGroupDish(payload),
           [loadMealGroupDishes, loadMealGroups, loadDishes],
         );
       },
       async updateMealGroupDish(mealGroupId, dishId, payload) {
-        await runMutation(
+        return runMutation(
           () => mealGroupDishesApi.updateMealGroupDish(mealGroupId, dishId, payload),
           [loadMealGroupDishes, loadMealGroups, loadDishes],
         );
       },
       async deleteMealGroupDish(mealGroupId, dishId) {
-        await runMutation(
+        return runMutation(
           () => mealGroupDishesApi.deleteMealGroupDish(mealGroupId, dishId),
           [loadMealGroupDishes, loadMealGroups, loadDishes],
         );

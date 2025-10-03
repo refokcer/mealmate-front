@@ -151,6 +151,16 @@
   gap: var(--space-2xs);
 }
 
+.group-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+}
+
+.group-selector .form-field__input {
+  min-width: 220px;
+}
+
 .product-card__dishes {
   display: grid;
   gap: var(--space-sm);
