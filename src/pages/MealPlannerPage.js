@@ -6,10 +6,36 @@ import { Modal } from '../components/common/Modal';
 import { FormField, SelectInput, TextInput } from '../components/forms/FormField';
 import { EmptyState } from '../components/common/EmptyState';
 
+const DEFAULT_ACCENT_COLOR = '#ff7e5f';
+
 const defaultGroup = {
   name: '',
   description: '',
-  accentColor: '#ff7e5f',
+  accentColor: DEFAULT_ACCENT_COLOR,
+};
+
+const createAccentGradient = (color) => {
+  const sourceColor = color || DEFAULT_ACCENT_COLOR;
+  const hexMatch = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(sourceColor);
+
+  if (hexMatch) {
+    let hex = hexMatch[1];
+
+    if (hex.length === 3) {
+      hex = hex
+        .split('')
+        .map((char) => `${char}${char}`)
+        .join('');
+    }
+
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+
+    return `linear-gradient(90deg, rgba(${r}, ${g}, ${b}, 1) 0%, rgba(${r}, ${g}, ${b}, 0) 100%)`;
+  }
+
+  return `linear-gradient(90deg, ${sourceColor} 0%, transparent 100%)`;
 };
 
 export const MealPlannerPage = ({
@@ -121,6 +147,10 @@ export const MealPlannerPage = ({
         <div className="grid grid--responsive">
           {mealGroups.map((group) => (
             <Card key={group.id} className="meal-group-card">
+              <div
+                className="meal-group-card__accent"
+                style={{ background: createAccentGradient(group.accentColor) }}
+              />
               <CardHeader
                 title={group.name}
                 subtitle={group.description}
@@ -144,7 +174,6 @@ export const MealPlannerPage = ({
               />
 
               <CardContent>
-                <div className="meal-group-card__accent" style={{ background: group.accentColor }} />
                 {group.dishes?.length ? (
                   <ul className="chip-list">
                     {group.dishes.map((dish) => (
