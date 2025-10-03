@@ -215,29 +215,21 @@ export const DishesPage = ({
                     </Button>
                   </div>
                   {dish.products?.length ? (
-                    <ul className="ingredient-list">
+                    <ul className="chip-list">
                       {dish.products.map((product) => (
-                        <li key={product.productId} className="ingredient-list__item">
-                          <div>
-                            <strong>{product.productName}</strong>
-                            {product.quantity && <p className="muted">{product.quantity}</p>}
-                          </div>
-                          <div className="ingredient-list__actions">
-                            <Button
-                              variant="ghost"
-                              onClick={() => openIngredientModal(dish, product)}
-                              disabled={isMutating}
-                            >
-                              Изменить
-                            </Button>
-                            <Button
-                              variant="danger"
-                              onClick={() => deleteDishProduct(dish.id, product.productId)}
-                              disabled={isMutating}
-                            >
-                              Удалить
-                            </Button>
-                          </div>
+                        <li key={product.productId} className="chip-list__item chip-list__item--static">
+                          <Tag
+                            tone="accent"
+                            onClick={() => deleteDishProduct(dish.id, product.productId)}
+                            disabled={isMutating}
+                            aria-label={`Удалить продукт ${product.productName}`}
+                            title="Удалить продукт из блюда"
+                          >
+                            {product.productName}
+                          </Tag>
+                          {product.quantity && (
+                            <span className="muted dish-card__ingredient-quantity">{product.quantity}</span>
+                          )}
                         </li>
                       ))}
                     </ul>

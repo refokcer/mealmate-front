@@ -127,6 +127,10 @@
   gap: var(--space-sm);
 }
 
+.dish-card__ingredient-quantity {
+  font-size: 0.75rem;
+}
+
 .ingredient-list {
   list-style: none;
   padding: 0;
