@@ -88,6 +88,23 @@
   gap: var(--space-sm);
 }
 
+.ingredient-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+}
+
+.ingredient-tag__name {
+  font-weight: 600;
+}
+
+.ingredient-tag__quantity {
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-left: var(--space-3xs);
+  color: var(--color-muted);
+}
+
 .ingredient-list {
   list-style: none;
   padding: 0;
