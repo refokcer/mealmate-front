@@ -71,16 +71,28 @@
   margin-bottom: var(--space-sm);
 }
 
-.dish-card__image {
-  width: 100%;
-  border-radius: var(--radius-xl);
-  max-height: 200px;
-  object-fit: cover;
-}
-
 .dish-card__info {
   display: grid;
   gap: var(--space-sm);
+}
+
+.dish-card__meta {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.dish-card__meta-time {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: var(--space-4xs) var(--space-3xs);
+  border-radius: var(--radius-lg);
+  background-color: rgba(255, 189, 89, 0.15);
+  color: var(--color-warning-strong);
+}
+
+.dish-card__meta .muted {
+  font-size: 0.7rem;
 }
 
 .dish-card__ingredients {
