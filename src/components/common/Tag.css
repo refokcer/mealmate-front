@@ -1,0 +1,26 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: var(--space-3xs) var(--space-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tag--neutral {
+  background: rgba(148, 163, 184, 0.14);
+  color: rgb(71, 85, 105);
+}
+
+.tag--accent {
+  background: rgba(45, 212, 191, 0.14);
+  color: rgb(13, 148, 136);
+}
+
+.tag--warning {
+  background: rgba(251, 191, 36, 0.2);
+  color: rgb(180, 83, 9);
+}
+
