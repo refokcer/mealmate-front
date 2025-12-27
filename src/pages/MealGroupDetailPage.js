@@ -4,7 +4,6 @@ import { Button } from '../components/common/Button';
 import { Modal } from '../components/common/Modal';
 import { EmptyState } from '../components/common/EmptyState';
 import { FormField, SelectInput } from '../components/forms/FormField';
-import { Tag } from '../components/common/Tag';
 
 export const MealGroupDetailPage = ({
   mealGroup,
@@ -72,22 +71,34 @@ export const MealGroupDetailPage = ({
 
         <CardContent>
           {mealGroup.dishes?.length ? (
-            <ul className="chip-list chip-list--spacious">
+            <div className="dish-grid">
               {mealGroup.dishes.map((dish) => (
-                <li key={dish.dishId} className="chip-list__item">
-                  <Tag tone="accent">{dish.dishName}</Tag>
-                  <button
-                    type="button"
-                    className="chip-list__remove"
-                    onClick={() => deleteMealGroupDish(mealGroup.id, dish.dishId)}
-                    disabled={isMutating}
-                    aria-label={`Убрать блюдо ${dish.dishName}`}
-                  >
-                    ×
-                  </button>
-                </li>
+                <Card key={dish.dishId} className="dish-card" accentColor={mealGroup.accentColor}>
+                  <div className="dish-card__header">
+                    <div className="dish-card__title">
+                      {mealGroup.accentColor && (
+                        <span
+                          className="card__accent"
+                          aria-hidden
+                          style={{ backgroundColor: mealGroup.accentColor }}
+                        />
+                      )}
+                      <p className="dish-card__name">{dish.dishName}</p>
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      className="icon-button"
+                      onClick={() => deleteMealGroupDish(mealGroup.id, dish.dishId)}
+                      disabled={isMutating}
+                      aria-label={`Убрать блюдо ${dish.dishName}`}
+                    >
+                      ×
+                    </Button>
+                  </div>
+                </Card>
               ))}
-            </ul>
+            </div>
           ) : (
             <EmptyState
               title="Блюд пока нет"
