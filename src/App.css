@@ -132,9 +132,10 @@
 
 .dish-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: var(--space-md);
-  max-width: calc(2 * 420px + var(--space-md));
+  grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+  gap: var(--space-lg);
+  max-width: min(calc(2 * 520px + var(--space-lg)), 100%);
+  width: 100%;
   margin: 0 auto;
 }
 
