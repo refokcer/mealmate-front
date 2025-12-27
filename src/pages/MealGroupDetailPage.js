@@ -3,7 +3,7 @@ import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Modal } from '../components/common/Modal';
 import { EmptyState } from '../components/common/EmptyState';
-import { FormField, SelectInput } from '../components/forms/FormField';
+import { FormField } from '../components/forms/FormField';
 
 export const MealGroupDetailPage = ({
   mealGroup,
@@ -15,6 +15,8 @@ export const MealGroupDetailPage = ({
 }) => {
   const [isAssignModalOpen, setAssignModalOpen] = useState(false);
   const [selectedDishId, setSelectedDishId] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDishListOpen, setDishListOpen] = useState(false);
 
   const dishOptions = useMemo(
     () => dishes.map((dish) => ({ label: dish.name, value: String(dish.id) })),
@@ -22,10 +24,22 @@ export const MealGroupDetailPage = ({
   );
 
   const selectedGroupDishIds = mealGroup?.dishes?.map((item) => item.dishId) ?? [];
-  const filteredDishOptions = dishOptions.filter((option) => !selectedGroupDishIds.includes(Number(option.value)));
+  const availableDishOptions = useMemo(
+    () => dishOptions.filter((option) => !selectedGroupDishIds.includes(Number(option.value))),
+    [dishOptions, selectedGroupDishIds],
+  );
+
+  const filteredDishOptions = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) return availableDishOptions;
+
+    return availableDishOptions.filter((option) => option.label.toLowerCase().includes(query));
+  }, [availableDishOptions, searchTerm]);
 
   const openAssignDishModal = () => {
     setSelectedDishId('');
+    setSearchTerm('');
+    setDishListOpen(false);
     setAssignModalOpen(true);
   };
 
@@ -136,14 +150,57 @@ export const MealGroupDetailPage = ({
           </>
         }
       >
-        <FormField label="Блюдо" hint="Можно добавить любое блюдо из списка">
-          <SelectInput
-            value={selectedDishId}
-            onChange={(event) => setSelectedDishId(event.target.value)}
-            options={filteredDishOptions}
-            placeholder={filteredDishOptions.length ? 'Выберите блюдо' : 'Все блюда уже добавлены'}
-            disabled={filteredDishOptions.length === 0}
-          />
+        <FormField label="Блюдо" hint="Найдите и добавьте любое блюдо из коллекции">
+          <div
+            className="searchable-select"
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setDishListOpen(false);
+              }
+            }}
+          >
+            <input
+              type="search"
+              className="form-field__input searchable-select__input"
+              placeholder={availableDishOptions.length ? 'Введите название блюда' : 'Все блюда уже добавлены'}
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              onFocus={() => availableDishOptions.length && setDishListOpen(true)}
+              onClick={() => availableDishOptions.length && setDishListOpen(true)}
+              disabled={availableDishOptions.length === 0}
+            />
+
+            {isDishListOpen && (
+              <div className="searchable-select__list" role="list">
+                {availableDishOptions.length === 0 && (
+                  <p className="muted" role="status">
+                    Все блюда уже добавлены в этот набор.
+                  </p>
+                )}
+
+                {availableDishOptions.length > 0 && filteredDishOptions.length === 0 && (
+                  <p className="muted" role="status">
+                    Ничего не найдено. Попробуйте изменить запрос.
+                  </p>
+                )}
+
+                {filteredDishOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={`searchable-select__option ${selectedDishId === option.value ? 'searchable-select__option--active' : ''}`}
+                    onClick={() => {
+                      setSelectedDishId(option.value);
+                      setDishListOpen(false);
+                    }}
+                  >
+                    <span className="searchable-select__option-title">{option.label}</span>
+                    {selectedDishId === option.value && <span className="searchable-select__check">Добавлено</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </FormField>
       </Modal>
     </div>
