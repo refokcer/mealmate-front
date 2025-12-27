@@ -34,6 +34,9 @@ export const DishesPage = ({
   createMealGroupDish,
   deleteMealGroupDish,
   isMutating,
+  editingDishId,
+  onEditingDishHandled,
+  onOpenDish,
 }) => {
   const [isDishModalOpen, setDishModalOpen] = useState(false);
   const [editingDish, setEditingDish] = useState(null);
@@ -46,6 +49,7 @@ export const DishesPage = ({
   const [isIngredientModalOpen, setIngredientModalOpen] = useState(false);
   const [ingredientForm, setIngredientForm] = useState(defaultIngredient);
   const [editingIngredient, setEditingIngredient] = useState(null);
+  const [openActionMenuId, setOpenActionMenuId] = useState(null);
 
   const productOptions = useMemo(
     () => products.map((product) => ({ label: product.name, value: String(product.id) })),
@@ -79,6 +83,22 @@ export const DishesPage = ({
 
     return map;
   }, [mealGroups]);
+
+  useEffect(() => {
+    if (!editingDishId) {
+      return;
+    }
+
+    const dishToEdit = dishes.find((dish) => dish.id === editingDishId);
+
+    if (!dishToEdit) {
+      onEditingDishHandled?.();
+      return;
+    }
+
+    openEditDishModal(dishToEdit);
+    onEditingDishHandled?.();
+  }, [dishes, editingDishId, onEditingDishHandled]);
 
   useEffect(() => {
     if (!editingDish) {
@@ -328,6 +348,12 @@ export const DishesPage = ({
   const disableIngredientActions = isExistingDish && isMutating;
   const disableGroupActions = isExistingDish && isMutating;
 
+  const toggleActionMenu = (dishId) => {
+    setOpenActionMenuId((current) => (current === dishId ? null : dishId));
+  };
+
+  const closeActionMenu = () => setOpenActionMenuId(null);
+
   return (
     <div className="page">
       <div className="page__header">
@@ -344,32 +370,61 @@ export const DishesPage = ({
       ) : (
         <div className="stack">
           {dishes.map((dish) => (
-            <Card key={dish.id} className="dish-card">
+            <Card
+              key={dish.id}
+              className="dish-card"
+              onClick={() => {
+                closeActionMenu();
+                onOpenDish?.(dish.id);
+              }}
+            >
               <CardHeader
                 title={dish.name}
-                subtitle={dish.description}
                 endSlot={
-                  <div className="card-action-buttons">
-                    <Button variant="ghost" onClick={() => openEditDishModal(dish)}>
-                      Редактировать
-                    </Button>
+                  <div className="dish-card__actions" onClick={(event) => event.stopPropagation()}>
                     <Button
-                      variant="danger"
-                      onClick={() => deleteDish(dish.id)}
-                      disabled={isMutating}
+                      variant="ghost"
+                      className="icon-button"
+                      onClick={() => toggleActionMenu(dish.id)}
+                      aria-label={`Действия с блюдом ${dish.name}`}
                     >
-                      Удалить
+                      ⚙️
                     </Button>
+                    {openActionMenuId === dish.id && (
+                      <div className="dish-card__menu" role="menu">
+                        <button
+                          type="button"
+                          className="dish-card__menu-item"
+                          onClick={() => {
+                            closeActionMenu();
+                            openEditDishModal(dish);
+                          }}
+                        >
+                          Редактировать
+                        </button>
+                        <button
+                          type="button"
+                          className="dish-card__menu-item dish-card__menu-item--danger"
+                          onClick={() => {
+                            closeActionMenu();
+                            deleteDish(dish.id);
+                          }}
+                          disabled={isMutating}
+                        >
+                          Удалить
+                        </button>
+                      </div>
+                    )}
                   </div>
                 }
               />
 
               <CardContent>
                 <div className="dish-card__info">
-                  {dish.instructions ? (
-                    <p className="multiline">{dish.instructions}</p>
+                  {dish.description ? (
+                    <p className="multiline">{dish.description}</p>
                   ) : (
-                    <p className="muted">Нет инструкций по приготовлению</p>
+                    <p className="muted">Нет описания блюда</p>
                   )}
 
                   <div className="dish-card__meta">
@@ -384,9 +439,6 @@ export const DishesPage = ({
                 <div className="dish-card__ingredients">
                   <div className="section-header">
                     <h3>Ингредиенты</h3>
-                    <Button variant="ghost" onClick={() => openIngredientModal(dish)}>
-                      Добавить
-                    </Button>
                   </div>
                   {dish.products?.length ? (
                     <div className="ingredient-tag-list">

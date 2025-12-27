@@ -142,6 +142,8 @@
 .dish-card {
   padding: var(--space-md);
   gap: var(--space-sm);
+  cursor: pointer;
+  position: relative;
 }
 
 .dish-card__header {
@@ -161,6 +163,51 @@
   margin: 0;
   font-weight: 700;
   color: var(--color-text-strong);
+}
+
+.dish-card__actions {
+  position: relative;
+  display: inline-flex;
+}
+
+.dish-card__menu {
+  position: absolute;
+  top: calc(100% + var(--space-2xs));
+  right: 0;
+  display: grid;
+  gap: var(--space-3xs);
+  padding: var(--space-xs);
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  min-width: 180px;
+  z-index: 1;
+}
+
+.dish-card__menu-item {
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  padding: var(--space-2xs) var(--space-xs);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.dish-card__menu-item:hover,
+.dish-card__menu-item:focus-visible {
+  background: rgba(255, 126, 95, 0.12);
+}
+
+.dish-card__menu-item--danger {
+  color: rgb(185, 28, 28);
+}
+
+.dish-card__menu-item--danger:hover,
+.dish-card__menu-item--danger:focus-visible {
+  background: rgba(248, 113, 113, 0.12);
 }
 
 .dish-card__info {
@@ -366,6 +413,32 @@
   gap: var(--space-xs);
   justify-content: flex-end;
   flex: 1;
+}
+
+.dish-detail__layout {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.dish-detail__main {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.dish-detail__sidebar {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.dish-detail__section {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+@media (min-width: 900px) {
+  .dish-detail__layout {
+    grid-template-columns: 2fr 1fr;
+  }
 }
 
 @media (min-width: 768px) {
