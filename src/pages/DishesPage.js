@@ -34,6 +34,8 @@ export const DishesPage = ({
   createMealGroupDish,
   deleteMealGroupDish,
   isMutating,
+  editingDishId,
+  onEditingDishHandled,
   onOpenDish,
 }) => {
   const [isDishModalOpen, setDishModalOpen] = useState(false);
@@ -81,6 +83,22 @@ export const DishesPage = ({
 
     return map;
   }, [mealGroups]);
+
+  useEffect(() => {
+    if (!editingDishId) {
+      return;
+    }
+
+    const dishToEdit = dishes.find((dish) => dish.id === editingDishId);
+
+    if (!dishToEdit) {
+      onEditingDishHandled?.();
+      return;
+    }
+
+    openEditDishModal(dishToEdit);
+    onEditingDishHandled?.();
+  }, [dishes, editingDishId, onEditingDishHandled]);
 
   useEffect(() => {
     if (!editingDish) {

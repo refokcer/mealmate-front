@@ -1,9 +1,16 @@
+import { useEffect, useState } from 'react';
 import { Card, CardContent } from '../components/common/Card';
 import { Tag } from '../components/common/Tag';
 import { EmptyState } from '../components/common/EmptyState';
 import { Button } from '../components/common/Button';
 
-export const DishDetailPage = ({ dish, onBack }) => {
+export const DishDetailPage = ({ dish, onBack, onEditDish, onDeleteDish, isMutating }) => {
+  const [isMenuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [dish?.id]);
+
   if (!dish) {
     return (
       <EmptyState
@@ -29,6 +36,48 @@ export const DishDetailPage = ({ dish, onBack }) => {
           </button>
           <h2 className="page__title">{dish.name}</h2>
           {dish.description && <p className="muted">{dish.description}</p>}
+        </div>
+
+        <div className="dish-card__actions">
+          <Button
+            variant="ghost"
+            className="icon-button"
+            aria-label={`Действия с блюдом ${dish.name}`}
+            onClick={() => setMenuOpen((state) => !state)}
+          >
+            ⚙️
+          </Button>
+
+          {isMenuOpen && (
+            <div className="dish-card__menu" role="menu">
+              <button
+                type="button"
+                className="dish-card__menu-item"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onEditDish?.(dish.id);
+                }}
+              >
+                Редактировать
+              </button>
+              <button
+                type="button"
+                className="dish-card__menu-item dish-card__menu-item--danger"
+                disabled={isMutating}
+                onClick={() => {
+                  setMenuOpen(false);
+                  if (!onDeleteDish) return;
+
+                  const shouldDelete = window.confirm('Удалить это блюдо?');
+                  if (shouldDelete) {
+                    onDeleteDish(dish.id);
+                  }
+                }}
+              >
+                Удалить
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
