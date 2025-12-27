@@ -70,9 +70,7 @@ export const MealGroupDetailPage = ({
     <div className="page">
       <div className="page__header">
         <div className="page__breadcrumbs">
-          <button type="button" className="link-button" onClick={onBack}>
-            ← Назад к наборам
-          </button>
+          <button type="button" className="link-button" onClick={onBack}>← Назад к наборам</button>
           <h2 className="page__title">{mealGroup.name}</h2>
           {mealGroup.description && <p className="muted">{mealGroup.description}</p>}
         </div>
