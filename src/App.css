@@ -44,6 +44,23 @@
   font-size: 1.05rem;
 }
 
+.section {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.section-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.section-heading__title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--color-text-strong);
+}
+
 .card-action-buttons {
   display: flex;
   gap: var(--space-xs);

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Card, CardContent, CardHeader } from '../components/common/Card';
+import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Modal } from '../components/common/Modal';
 import { EmptyState } from '../components/common/EmptyState';
@@ -66,48 +66,60 @@ export const MealGroupDetailPage = ({
         <Button onClick={openAssignDishModal}>Добавить блюдо</Button>
       </div>
 
-      <Card accentColor={mealGroup.accentColor}>
-        <CardHeader title="Блюда в наборе" accentColor={mealGroup.accentColor} />
-
-        <CardContent>
-          {mealGroup.dishes?.length ? (
-            <div className="dish-grid">
-              {mealGroup.dishes.map((dish) => (
-                <Card key={dish.dishId} className="dish-card" accentColor={mealGroup.accentColor}>
-                  <div className="dish-card__header">
-                    <div className="dish-card__title">
-                      {mealGroup.accentColor && (
-                        <span
-                          className="card__accent"
-                          aria-hidden
-                          style={{ backgroundColor: mealGroup.accentColor }}
-                        />
-                      )}
-                      <p className="dish-card__name">{dish.dishName}</p>
-                    </div>
-
-                    <Button
-                      variant="ghost"
-                      className="icon-button"
-                      onClick={() => deleteMealGroupDish(mealGroup.id, dish.dishId)}
-                      disabled={isMutating}
-                      aria-label={`Убрать блюдо ${dish.dishName}`}
-                    >
-                      ×
-                    </Button>
-                  </div>
-                </Card>
-              ))}
+      <div className="section">
+        <div className="section-header">
+          <div className="section-heading">
+            {mealGroup.accentColor && (
+              <span
+                className="card__accent"
+                aria-hidden
+                style={{ backgroundColor: mealGroup.accentColor }}
+              />
+            )}
+            <div>
+              <h3 className="section-heading__title">Блюда в наборе</h3>
+              <p className="muted">Каждое блюдо представлено отдельной карточкой.</p>
             </div>
-          ) : (
-            <EmptyState
-              title="Блюд пока нет"
-              description="Добавьте первые блюда в этот набор, чтобы перейти к планированию."
-              action={<Button onClick={openAssignDishModal}>Добавить блюдо</Button>}
-            />
-          )}
-        </CardContent>
-      </Card>
+          </div>
+        </div>
+
+        {mealGroup.dishes?.length ? (
+          <div className="dish-grid">
+            {mealGroup.dishes.map((dish) => (
+              <Card key={dish.dishId} className="dish-card" accentColor={mealGroup.accentColor}>
+                <div className="dish-card__header">
+                  <div className="dish-card__title">
+                    {mealGroup.accentColor && (
+                      <span
+                        className="card__accent"
+                        aria-hidden
+                        style={{ backgroundColor: mealGroup.accentColor }}
+                      />
+                    )}
+                    <p className="dish-card__name">{dish.dishName}</p>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    className="icon-button"
+                    onClick={() => deleteMealGroupDish(mealGroup.id, dish.dishId)}
+                    disabled={isMutating}
+                    aria-label={`Убрать блюдо ${dish.dishName}`}
+                  >
+                    ×
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="Блюд пока нет"
+            description="Добавьте первые блюда в этот набор, чтобы перейти к планированию."
+            action={<Button onClick={openAssignDishModal}>Добавить блюдо</Button>}
+          />
+        )}
+      </div>
 
       <Modal
         open={isAssignModalOpen}
