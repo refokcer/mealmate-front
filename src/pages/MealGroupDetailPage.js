@@ -12,6 +12,7 @@ export const MealGroupDetailPage = ({
   createMealGroupDish,
   deleteMealGroupDish,
   isMutating,
+  onOpenDish,
 }) => {
   const [isAssignModalOpen, setAssignModalOpen] = useState(false);
   const [selectedDishId, setSelectedDishId] = useState('');
@@ -98,7 +99,12 @@ export const MealGroupDetailPage = ({
         {mealGroup.dishes?.length ? (
           <div className="dish-grid">
             {mealGroup.dishes.map((dish) => (
-              <Card key={dish.dishId} className="dish-card" accentColor={mealGroup.accentColor}>
+              <Card
+                key={dish.dishId}
+                className="dish-card"
+                accentColor={mealGroup.accentColor}
+                onClick={() => onOpenDish?.(dish.dishId)}
+              >
                 <div className="dish-card__header">
                   <div className="dish-card__title">
                     {mealGroup.accentColor && (
@@ -114,7 +120,10 @@ export const MealGroupDetailPage = ({
                   <Button
                     variant="ghost"
                     className="icon-button"
-                    onClick={() => deleteMealGroupDish(mealGroup.id, dish.dishId)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      deleteMealGroupDish(mealGroup.id, dish.dishId);
+                    }}
                     disabled={isMutating}
                     aria-label={`Убрать блюдо ${dish.dishName}`}
                   >

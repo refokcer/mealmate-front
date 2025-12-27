@@ -135,6 +135,10 @@ function App() {
             deleteMealGroupDish={planner.deleteMealGroupDish}
             isMutating={planner.isMutating}
             onBack={() => setView('planner')}
+            onOpenDish={(dishId) => {
+              setActiveDishId(dishId);
+              setView('dishDetail');
+            }}
           />
         );
       case 'dishDetail':
