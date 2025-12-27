@@ -43,6 +43,7 @@ function App() {
   const [view, setView] = useState('planner');
   const [activeGroupId, setActiveGroupId] = useState(null);
   const [activeDishId, setActiveDishId] = useState(null);
+  const [dishDetailReturnView, setDishDetailReturnView] = useState('dishes');
   const [pendingDishEditId, setPendingDishEditId] = useState(null);
   const planner = usePlannerData();
 
@@ -97,6 +98,7 @@ function App() {
             onEditingDishHandled={() => setPendingDishEditId(null)}
             onOpenDish={(dishId) => {
               setActiveDishId(dishId);
+              setDishDetailReturnView('dishes');
               setView('dishDetail');
             }}
           />
@@ -135,26 +137,35 @@ function App() {
             deleteMealGroupDish={planner.deleteMealGroupDish}
             isMutating={planner.isMutating}
             onBack={() => setView('planner')}
+            onOpenDish={(dishId) => {
+              setActiveDishId(dishId);
+              setDishDetailReturnView('groupDetail');
+              setView('dishDetail');
+            }}
           />
         );
       case 'dishDetail':
         return (
           <DishDetailPage
             dish={activeDish}
-            onBack={() => setView('dishes')}
+            onBack={() => {
+              setActiveDishId(null);
+              setView(dishDetailReturnView);
+            }}
             onEditDish={(dishId) => {
               setPendingDishEditId(dishId);
               setView('dishes');
             }}
             onDeleteDish={async (dishId) => {
               await planner.deleteDish(dishId);
-              setView('dishes');
+              setActiveDishId(null);
+              setView(dishDetailReturnView);
             }}
             isMutating={planner.isMutating}
           />
         );
     }
-  }, [activeDish, activeGroup, planner, view]);
+  }, [activeDish, activeGroup, dishDetailReturnView, planner, view]);
 
   return (
     <AppLayout
