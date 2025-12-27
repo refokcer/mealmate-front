@@ -285,6 +285,14 @@
   font-weight: 600;
   padding: 0;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  text-align: left;
+}
+
+.page__breadcrumbs .link-button {
+  justify-self: start;
 }
 
 .searchable-select {
