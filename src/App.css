@@ -132,8 +132,10 @@
 
 .dish-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: var(--space-md);
+  max-width: calc(2 * 420px + var(--space-md));
+  margin: 0 auto;
 }
 
 .dish-card {
