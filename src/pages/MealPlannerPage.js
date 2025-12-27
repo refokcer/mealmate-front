@@ -1,9 +1,8 @@
-import { useMemo, useState } from 'react';
-import { Card, CardContent, CardFooter, CardHeader } from '../components/common/Card';
+import { useState } from 'react';
+import { Card, CardHeader } from '../components/common/Card';
 import { Button } from '../components/common/Button';
-import { Tag } from '../components/common/Tag';
 import { Modal } from '../components/common/Modal';
-import { FormField, SelectInput, TextInput } from '../components/forms/FormField';
+import { FormField, TextInput } from '../components/forms/FormField';
 import { EmptyState } from '../components/common/EmptyState';
 
 const DEFAULT_ACCENT_COLOR = '#ff7e5f';
@@ -16,27 +15,16 @@ const defaultGroup = {
 
 export const MealPlannerPage = ({
   mealGroups,
-  dishes,
   createMealGroup,
   updateMealGroup,
   deleteMealGroup,
-  createMealGroupDish,
-  deleteMealGroupDish,
   isMutating,
+  onOpenGroup,
 }) => {
   const [isGroupModalOpen, setGroupModalOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState(null);
   const [groupForm, setGroupForm] = useState(defaultGroup);
   const [groupErrors, setGroupErrors] = useState({});
-
-  const [isAssignModalOpen, setAssignModalOpen] = useState(false);
-  const [selectedGroupId, setSelectedGroupId] = useState(null);
-  const [selectedDishId, setSelectedDishId] = useState('');
-
-  const groupOptions = useMemo(
-    () => dishes.map((dish) => ({ label: dish.name, value: String(dish.id) })),
-    [dishes],
-  );
 
   const resetGroupModal = () => {
     setGroupModalOpen(false);
@@ -82,29 +70,12 @@ export const MealPlannerPage = ({
     resetGroupModal();
   };
 
-  const openAssignDishModal = (groupId) => {
-    setSelectedGroupId(groupId);
-    setSelectedDishId('');
-    setAssignModalOpen(true);
+  const handleDeleteGroup = async () => {
+    if (!editingGroup) return;
+
+    await deleteMealGroup(editingGroup.id);
+    resetGroupModal();
   };
-
-  const submitAssignDish = async () => {
-    if (!selectedDishId || !selectedGroupId) {
-      return;
-    }
-
-    await createMealGroupDish({
-      mealGroupId: Number(selectedGroupId),
-      dishId: Number(selectedDishId),
-    });
-
-    setAssignModalOpen(false);
-  };
-
-  const selectedGroup = mealGroups.find((group) => group.id === selectedGroupId);
-  const selectedGroupDishIds = selectedGroup?.dishes?.map((item) => item.dishId) ?? [];
-
-  const filteredGroupOptions = groupOptions.filter((option) => !selectedGroupDishIds.includes(Number(option.value)));
 
   return (
     <div className="page">
@@ -122,61 +93,38 @@ export const MealPlannerPage = ({
       ) : (
         <div className="grid grid--responsive">
           {mealGroups.map((group) => (
-            <Card key={group.id} className="meal-group-card">
-              <div
-                className="meal-group-card__accent"
-                style={{ backgroundColor: group.accentColor || DEFAULT_ACCENT_COLOR }}
-              />
+            <Card
+              key={group.id}
+              className="meal-group-card"
+              accentColor={group.accentColor || DEFAULT_ACCENT_COLOR}
+              role="button"
+              tabIndex={0}
+              onClick={() => onOpenGroup?.(group.id)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onOpenGroup?.(group.id);
+                }
+              }}
+            >
               <CardHeader
                 title={group.name}
                 subtitle={group.description}
+                accentColor={group.accentColor || DEFAULT_ACCENT_COLOR}
                 endSlot={
-                  <div className="card-action-buttons">
-                    <Button variant="ghost" onClick={() => openAssignDishModal(group.id)}>
-                      Добавить блюдо
-                    </Button>
-                    <Button variant="ghost" onClick={() => openEditModal(group)}>
-                      Редактировать
-                    </Button>
-                    <Button
-                      variant="danger"
-                      onClick={() => deleteMealGroup(group.id)}
-                      disabled={isMutating}
-                    >
-                      Удалить
-                    </Button>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    className="icon-button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      openEditModal(group);
+                    }}
+                    aria-label={`Настройки набора ${group.name}`}
+                  >
+                    ⚙️
+                  </Button>
                 }
               />
-
-              <CardContent>
-                {group.dishes?.length ? (
-                  <ul className="chip-list">
-                    {group.dishes.map((dish) => (
-                      <li key={dish.dishId} className="chip-list__item">
-                        <Tag tone="accent">{dish.dishName}</Tag>
-                        <button
-                          type="button"
-                          className="chip-list__remove"
-                          onClick={() => deleteMealGroupDish(group.id, dish.dishId)}
-                          aria-label={`Убрать блюдо ${dish.dishName}`}
-                          disabled={isMutating}
-                        >
-                          ×
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="muted">Блюда пока не добавлены.</p>
-                )}
-              </CardContent>
-
-              <CardFooter>
-                <Button variant="ghost" onClick={() => openAssignDishModal(group.id)}>
-                  Подобрать блюдо
-                </Button>
-              </CardFooter>
             </Card>
           ))}
         </div>
@@ -187,14 +135,22 @@ export const MealPlannerPage = ({
         title={editingGroup ? 'Редактирование набора' : 'Новый набор'}
         onClose={resetGroupModal}
         footer={
-          <>
-            <Button variant="ghost" onClick={resetGroupModal} disabled={isMutating}>
-              Отмена
-            </Button>
-            <Button onClick={submitGroup} disabled={isMutating}>
-              {editingGroup ? 'Сохранить' : 'Создать'}
-            </Button>
-          </>
+          <div className="modal-actions">
+            {editingGroup && (
+              <Button variant="danger" onClick={handleDeleteGroup} disabled={isMutating}>
+                Удалить набор
+              </Button>
+            )}
+
+            <div className="modal-actions__end">
+              <Button variant="ghost" onClick={resetGroupModal} disabled={isMutating}>
+                Отмена
+              </Button>
+              <Button onClick={submitGroup} disabled={isMutating}>
+                {editingGroup ? 'Сохранить' : 'Создать'}
+              </Button>
+            </div>
+          </div>
         }
       >
         <FormField label="Название" error={groupErrors.name}>
@@ -220,32 +176,6 @@ export const MealPlannerPage = ({
             type="color"
             value={groupForm.accentColor}
             onChange={(event) => setGroupForm((state) => ({ ...state, accentColor: event.target.value }))}
-          />
-        </FormField>
-      </Modal>
-
-      <Modal
-        open={isAssignModalOpen}
-        title="Добавить блюдо в набор"
-        onClose={() => setAssignModalOpen(false)}
-        footer={
-          <>
-            <Button variant="ghost" onClick={() => setAssignModalOpen(false)} disabled={isMutating}>
-              Отмена
-            </Button>
-            <Button onClick={submitAssignDish} disabled={!selectedDishId || isMutating}>
-              Добавить
-            </Button>
-          </>
-        }
-      >
-        <FormField label="Блюдо" hint="Можно добавить любое блюдо из списка">
-          <SelectInput
-            value={selectedDishId}
-            onChange={(event) => setSelectedDishId(event.target.value)}
-            options={filteredGroupOptions}
-            placeholder={filteredGroupOptions.length ? 'Выберите блюдо' : 'Все блюда уже добавлены'}
-            disabled={filteredGroupOptions.length === 0}
           />
         </FormField>
       </Modal>

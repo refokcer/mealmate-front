@@ -3,6 +3,7 @@ import './App.css';
 import { AppLayout } from './components/layout/AppLayout';
 import { usePlannerData } from './hooks/usePlannerData';
 import { MealPlannerPage } from './pages/MealPlannerPage';
+import { MealGroupDetailPage } from './pages/MealGroupDetailPage';
 import { DishesPage } from './pages/DishesPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { Alert } from './components/common/Alert';
@@ -21,6 +22,10 @@ const VIEW_CONFIG = {
     title: 'Продукты и холодильник',
     subtitle: 'MealMate',
   },
+  groupDetail: {
+    title: 'Набор приёмов пищи',
+    subtitle: 'MealMate',
+  },
 };
 
 const NAV_ITEMS = [
@@ -31,9 +36,20 @@ const NAV_ITEMS = [
 
 function App() {
   const [view, setView] = useState('planner');
+  const [activeGroupId, setActiveGroupId] = useState(null);
   const planner = usePlannerData();
 
-  const { title, subtitle } = VIEW_CONFIG[view] ?? VIEW_CONFIG.planner;
+  const activeGroup = planner.mealGroups.find((group) => group.id === activeGroupId);
+
+  const { title, subtitle } =
+    view === 'groupDetail' && activeGroup
+      ? { title: activeGroup.name, subtitle: 'Набор приёмов пищи' }
+      : VIEW_CONFIG[view] ?? VIEW_CONFIG.planner;
+
+  const changeView = (nextView) => {
+    setView(nextView);
+    setActiveGroupId(null);
+  };
 
   const content = useMemo(() => {
     if (planner.loading) {
@@ -78,22 +94,34 @@ function App() {
         return (
           <MealPlannerPage
             mealGroups={planner.mealGroups}
-            dishes={planner.dishes}
             createMealGroup={planner.createMealGroup}
             updateMealGroup={planner.updateMealGroup}
             deleteMealGroup={planner.deleteMealGroup}
+            isMutating={planner.isMutating}
+            onOpenGroup={(groupId) => {
+              setActiveGroupId(groupId);
+              setView('groupDetail');
+            }}
+          />
+        );
+      case 'groupDetail':
+        return (
+          <MealGroupDetailPage
+            mealGroup={activeGroup}
+            dishes={planner.dishes}
             createMealGroupDish={planner.createMealGroupDish}
             deleteMealGroupDish={planner.deleteMealGroupDish}
             isMutating={planner.isMutating}
+            onBack={() => setView('planner')}
           />
         );
     }
-  }, [planner, view]);
+  }, [activeGroup, planner, view]);
 
   return (
     <AppLayout
-      activeView={view}
-      onChangeView={setView}
+      activeView={view === 'groupDetail' ? 'planner' : view}
+      onChangeView={changeView}
       title={title}
       subtitle={subtitle}
       navigationItems={NAV_ITEMS}
