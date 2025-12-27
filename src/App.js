@@ -5,6 +5,7 @@ import { usePlannerData } from './hooks/usePlannerData';
 import { MealPlannerPage } from './pages/MealPlannerPage';
 import { MealGroupDetailPage } from './pages/MealGroupDetailPage';
 import { DishesPage } from './pages/DishesPage';
+import { DishDetailPage } from './pages/DishDetailPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { Alert } from './components/common/Alert';
 import { Button } from './components/common/Button';
@@ -26,6 +27,10 @@ const VIEW_CONFIG = {
     title: 'Набор приёмов пищи',
     subtitle: 'MealMate',
   },
+  dishDetail: {
+    title: 'Блюдо',
+    subtitle: 'MealMate',
+  },
 };
 
 const NAV_ITEMS = [
@@ -37,18 +42,28 @@ const NAV_ITEMS = [
 function App() {
   const [view, setView] = useState('planner');
   const [activeGroupId, setActiveGroupId] = useState(null);
+  const [activeDishId, setActiveDishId] = useState(null);
   const planner = usePlannerData();
 
   const activeGroup = planner.mealGroups.find((group) => group.id === activeGroupId);
+  const activeDish = planner.dishes.find((dish) => dish.id === activeDishId);
 
-  const { title, subtitle } =
-    view === 'groupDetail' && activeGroup
-      ? { title: activeGroup.name, subtitle: 'Набор приёмов пищи' }
-      : VIEW_CONFIG[view] ?? VIEW_CONFIG.planner;
+  const { title, subtitle } = (() => {
+    if (view === 'groupDetail' && activeGroup) {
+      return { title: activeGroup.name, subtitle: 'Набор приёмов пищи' };
+    }
+
+    if (view === 'dishDetail' && activeDish) {
+      return { title: activeDish.name, subtitle: 'Блюдо' };
+    }
+
+    return VIEW_CONFIG[view] ?? VIEW_CONFIG.planner;
+  })();
 
   const changeView = (nextView) => {
     setView(nextView);
     setActiveGroupId(null);
+    setActiveDishId(null);
   };
 
   const content = useMemo(() => {
@@ -77,6 +92,10 @@ function App() {
             createMealGroupDish={planner.createMealGroupDish}
             deleteMealGroupDish={planner.deleteMealGroupDish}
             isMutating={planner.isMutating}
+            onOpenDish={(dishId) => {
+              setActiveDishId(dishId);
+              setView('dishDetail');
+            }}
           />
         );
       case 'products':
@@ -115,12 +134,14 @@ function App() {
             onBack={() => setView('planner')}
           />
         );
+      case 'dishDetail':
+        return <DishDetailPage dish={activeDish} onBack={() => setView('dishes')} />;
     }
-  }, [activeGroup, planner, view]);
+  }, [activeDish, activeGroup, planner, view]);
 
   return (
     <AppLayout
-      activeView={view === 'groupDetail' ? 'planner' : view}
+      activeView={view === 'groupDetail' ? 'planner' : view === 'dishDetail' ? 'dishes' : view}
       onChangeView={changeView}
       title={title}
       subtitle={subtitle}
