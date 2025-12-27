@@ -16,6 +16,7 @@ export const MealGroupDetailPage = ({
   const [isAssignModalOpen, setAssignModalOpen] = useState(false);
   const [selectedDishId, setSelectedDishId] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isDishListOpen, setDishListOpen] = useState(false);
 
   const dishOptions = useMemo(
     () => dishes.map((dish) => ({ label: dish.name, value: String(dish.id) })),
@@ -38,6 +39,7 @@ export const MealGroupDetailPage = ({
   const openAssignDishModal = () => {
     setSelectedDishId('');
     setSearchTerm('');
+    setDishListOpen(false);
     setAssignModalOpen(true);
   };
 
@@ -149,41 +151,55 @@ export const MealGroupDetailPage = ({
         }
       >
         <FormField label="Блюдо" hint="Найдите и добавьте любое блюдо из коллекции">
-          <div className="searchable-select">
+          <div
+            className="searchable-select"
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setDishListOpen(false);
+              }
+            }}
+          >
             <input
               type="search"
               className="form-field__input searchable-select__input"
               placeholder={availableDishOptions.length ? 'Введите название блюда' : 'Все блюда уже добавлены'}
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
+              onFocus={() => availableDishOptions.length && setDishListOpen(true)}
+              onClick={() => availableDishOptions.length && setDishListOpen(true)}
               disabled={availableDishOptions.length === 0}
             />
 
-            <div className="searchable-select__list" role="list">
-              {availableDishOptions.length === 0 && (
-                <p className="muted" role="status">
-                  Все блюда уже добавлены в этот набор.
-                </p>
-              )}
+            {isDishListOpen && (
+              <div className="searchable-select__list" role="list">
+                {availableDishOptions.length === 0 && (
+                  <p className="muted" role="status">
+                    Все блюда уже добавлены в этот набор.
+                  </p>
+                )}
 
-              {availableDishOptions.length > 0 && filteredDishOptions.length === 0 && (
-                <p className="muted" role="status">
-                  Ничего не найдено. Попробуйте изменить запрос.
-                </p>
-              )}
+                {availableDishOptions.length > 0 && filteredDishOptions.length === 0 && (
+                  <p className="muted" role="status">
+                    Ничего не найдено. Попробуйте изменить запрос.
+                  </p>
+                )}
 
-              {filteredDishOptions.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  className={`searchable-select__option ${selectedDishId === option.value ? 'searchable-select__option--active' : ''}`}
-                  onClick={() => setSelectedDishId(option.value)}
-                >
-                  <span className="searchable-select__option-title">{option.label}</span>
-                  {selectedDishId === option.value && <span className="searchable-select__check">Добавлено</span>}
-                </button>
-              ))}
-            </div>
+                {filteredDishOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={`searchable-select__option ${selectedDishId === option.value ? 'searchable-select__option--active' : ''}`}
+                    onClick={() => {
+                      setSelectedDishId(option.value);
+                      setDishListOpen(false);
+                    }}
+                  >
+                    <span className="searchable-select__option-title">{option.label}</span>
+                    {selectedDishId === option.value && <span className="searchable-select__check">Добавлено</span>}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </FormField>
       </Modal>
