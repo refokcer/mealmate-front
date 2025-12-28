@@ -51,6 +51,7 @@ export const DishesPage = ({
   const [editingIngredient, setEditingIngredient] = useState(null);
   const [openActionMenuId, setOpenActionMenuId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [ingredientSearchQuery, setIngredientSearchQuery] = useState('');
 
   const productOptions = useMemo(
     () => products.map((product) => ({ label: product.name, value: String(product.id) })),
@@ -219,12 +220,14 @@ export const DishesPage = ({
       quantity: ingredient?.quantity ?? '',
       isDraft,
     });
+    setIngredientSearchQuery('');
     setIngredientModalOpen(true);
   };
 
   const closeIngredientModal = () => {
     setIngredientForm(defaultIngredient);
     setEditingIngredient(null);
+    setIngredientSearchQuery('');
     setIngredientModalOpen(false);
   };
 
@@ -336,6 +339,32 @@ export const DishesPage = ({
     pendingIngredients,
     productOptions,
   ]);
+
+  const normalizedIngredientSearch = ingredientSearchQuery.trim().toLowerCase();
+
+  const filteredAvailableProducts = useMemo(() => {
+    if (!normalizedIngredientSearch) {
+      return availableProducts;
+    }
+
+    const filtered = availableProducts.filter((option) =>
+      option.label.toLowerCase().includes(normalizedIngredientSearch),
+    );
+
+    if (!ingredientForm.productId) {
+      return filtered;
+    }
+
+    const selectedOption = availableProducts.find(
+      (option) => option.value === ingredientForm.productId,
+    );
+
+    if (selectedOption && !filtered.some((option) => option.value === selectedOption.value)) {
+      return [selectedOption, ...filtered];
+    }
+
+    return filtered;
+  }, [availableProducts, ingredientForm.productId, normalizedIngredientSearch]);
 
   const availableGroupOptions = useMemo(
     () => groupOptions.filter((option) => !selectedGroupIds.includes(Number(option.value))),
@@ -688,14 +717,27 @@ export const DishesPage = ({
         }
       >
         <FormField label="Продукт">
+          <TextInput
+            type="search"
+            value={ingredientSearchQuery}
+            onChange={(event) => setIngredientSearchQuery(event.target.value)}
+            placeholder="Поиск продукта"
+            aria-label="Поиск по продуктам"
+          />
           <SelectInput
             value={ingredientForm.productId}
             onChange={(event) =>
               setIngredientForm((state) => ({ ...state, productId: event.target.value }))
             }
-            options={availableProducts}
-            disabled={availableProducts.length === 0}
-            placeholder={availableProducts.length ? 'Выберите продукт' : 'Нет доступных продуктов'}
+            options={filteredAvailableProducts}
+            disabled={filteredAvailableProducts.length === 0}
+            placeholder={
+              filteredAvailableProducts.length
+                ? 'Выберите продукт'
+                : availableProducts.length
+                ? 'По запросу ничего не найдено'
+                : 'Нет доступных продуктов'
+            }
           />
         </FormField>
 
