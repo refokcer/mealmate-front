@@ -50,6 +50,9 @@ export const DishesPage = ({
   const [ingredientForm, setIngredientForm] = useState(defaultIngredient);
   const [editingIngredient, setEditingIngredient] = useState(null);
   const [openActionMenuId, setOpenActionMenuId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [ingredientSearchQuery, setIngredientSearchQuery] = useState('');
+  const [isProductListOpen, setProductListOpen] = useState(false);
 
   const productOptions = useMemo(
     () => products.map((product) => ({ label: product.name, value: String(product.id) })),
@@ -218,12 +221,15 @@ export const DishesPage = ({
       quantity: ingredient?.quantity ?? '',
       isDraft,
     });
+    setIngredientSearchQuery(ingredient ? productNameMap.get(ingredient.productId) ?? '' : '');
     setIngredientModalOpen(true);
   };
 
   const closeIngredientModal = () => {
     setIngredientForm(defaultIngredient);
     setEditingIngredient(null);
+    setIngredientSearchQuery('');
+    setProductListOpen(false);
     setIngredientModalOpen(false);
   };
 
@@ -336,6 +342,42 @@ export const DishesPage = ({
     productOptions,
   ]);
 
+  const normalizedIngredientSearch = ingredientSearchQuery.trim().toLowerCase();
+
+  const filteredAvailableProducts = useMemo(() => {
+    if (!normalizedIngredientSearch) {
+      return availableProducts;
+    }
+
+    const filtered = availableProducts.filter((option) =>
+      option.label.toLowerCase().includes(normalizedIngredientSearch),
+    );
+
+    if (!ingredientForm.productId) {
+      return filtered;
+    }
+
+    const selectedOption = availableProducts.find(
+      (option) => option.value === ingredientForm.productId,
+    );
+
+    if (selectedOption && !filtered.some((option) => option.value === selectedOption.value)) {
+      return [selectedOption, ...filtered];
+    }
+
+    return filtered;
+  }, [availableProducts, ingredientForm.productId, normalizedIngredientSearch]);
+
+  const selectedProductLabel = useMemo(() => {
+    const id = Number(ingredientForm.productId);
+
+    if (!id) {
+      return '';
+    }
+
+    return productNameMap.get(id) ?? '';
+  }, [ingredientForm.productId, productNameMap]);
+
   const availableGroupOptions = useMemo(
     () => groupOptions.filter((option) => !selectedGroupIds.includes(Number(option.value))),
     [groupOptions, selectedGroupIds],
@@ -347,6 +389,19 @@ export const DishesPage = ({
     : pendingIngredients;
   const disableIngredientActions = isExistingDish && isMutating;
   const disableGroupActions = isExistingDish && isMutating;
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+  const filteredDishes = useMemo(() => {
+    if (!normalizedSearchQuery) {
+      return dishes;
+    }
+
+    return dishes.filter((dish) => {
+      const name = dish.name?.toLowerCase() ?? '';
+      const description = dish.description?.toLowerCase() ?? '';
+
+      return name.includes(normalizedSearchQuery) || description.includes(normalizedSearchQuery);
+    });
+  }, [dishes, normalizedSearchQuery]);
 
   const toggleActionMenu = (dishId) => {
     setOpenActionMenuId((current) => (current === dishId ? null : dishId));
@@ -361,15 +416,37 @@ export const DishesPage = ({
         <Button onClick={openCreateDishModal}>Новое блюдо</Button>
       </div>
 
+      {dishes.length > 0 && (
+        <div className="page__filters">
+          <TextInput
+            type="search"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Поиск по названию или описанию"
+            aria-label="Поиск по блюдам"
+          />
+        </div>
+      )}
+
       {dishes.length === 0 ? (
         <EmptyState
           title="Список блюд пуст"
           description="Добавьте любимые рецепты и планируйте меню в один клик."
           action={<Button onClick={openCreateDishModal}>Добавить блюдо</Button>}
         />
+      ) : filteredDishes.length === 0 ? (
+        <EmptyState
+          title="Блюда не найдены"
+          description="Не удалось найти блюда по этому запросу. Попробуйте изменить поисковый текст."
+          action={
+            <Button variant="ghost" onClick={() => setSearchQuery('')}>
+              Сбросить поиск
+            </Button>
+          }
+        />
       ) : (
         <div className="stack">
-          {dishes.map((dish) => (
+          {filteredDishes.map((dish) => (
             <Card
               key={dish.id}
               className="dish-card"
@@ -652,15 +729,59 @@ export const DishesPage = ({
         }
       >
         <FormField label="Продукт">
-          <SelectInput
-            value={ingredientForm.productId}
-            onChange={(event) =>
-              setIngredientForm((state) => ({ ...state, productId: event.target.value }))
-            }
-            options={availableProducts}
-            disabled={availableProducts.length === 0}
-            placeholder={availableProducts.length ? 'Выберите продукт' : 'Нет доступных продуктов'}
-          />
+          <div className="autocomplete">
+            <TextInput
+              type="search"
+              value={ingredientSearchQuery}
+              onChange={(event) => {
+                const { value } = event.target;
+
+                setIngredientSearchQuery(value);
+                setProductListOpen(true);
+
+                if (!value.trim()) {
+                  setIngredientForm((state) => ({ ...state, productId: '' }));
+                }
+              }}
+              onFocus={() => setProductListOpen(true)}
+              onBlur={() => setTimeout(() => setProductListOpen(false), 120)}
+              placeholder={availableProducts.length ? 'Поиск продукта' : 'Нет доступных продуктов'}
+              aria-label="Поиск по продуктам"
+              disabled={availableProducts.length === 0}
+            />
+
+            {isProductListOpen && filteredAvailableProducts.length > 0 && (
+              <ul className="autocomplete__list" role="listbox">
+                {filteredAvailableProducts.map((option) => (
+                  <li
+                    key={option.value}
+                    className="autocomplete__option"
+                    role="option"
+                    aria-selected={option.value === ingredientForm.productId}
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                      setIngredientForm((state) => ({ ...state, productId: option.value }));
+                      setIngredientSearchQuery(option.label);
+                      setProductListOpen(false);
+                    }}
+                  >
+                    <span>{option.label}</span>
+                    {option.value === ingredientForm.productId && <span className="autocomplete__check">✓</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {!isProductListOpen && ingredientForm.productId && ingredientSearchQuery !== selectedProductLabel && (
+              <p className="form-field__hint">{selectedProductLabel}</p>
+            )}
+
+            {isProductListOpen && filteredAvailableProducts.length === 0 && (
+              <div className="autocomplete__empty" role="status">
+                {availableProducts.length ? 'По запросу ничего не найдено' : 'Нет доступных продуктов'}
+              </div>
+            )}
+          </div>
         </FormField>
 
         <FormField label="Количество" hint="Например, 2 яйца или 150 г">
