@@ -384,16 +384,6 @@ export const DishesPage = ({
             placeholder="Поиск по названию или описанию"
             aria-label="Поиск по блюдам"
           />
-          {searchQuery && (
-            <Button
-              variant="ghost"
-              className="icon-button"
-              onClick={() => setSearchQuery('')}
-              aria-label="Очистить поиск"
-            >
-              ×
-            </Button>
-          )}
         </div>
       )}
 
