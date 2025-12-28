@@ -385,8 +385,13 @@ export const DishesPage = ({
             aria-label="Поиск по блюдам"
           />
           {searchQuery && (
-            <Button variant="ghost" onClick={() => setSearchQuery('')}>
-              Очистить
+            <Button
+              variant="ghost"
+              className="icon-button"
+              onClick={() => setSearchQuery('')}
+              aria-label="Очистить поиск"
+            >
+              ×
             </Button>
           )}
         </div>
