@@ -12,6 +12,17 @@
   flex-wrap: wrap;
 }
 
+.page__filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.page__filters .form-field__input {
+  min-width: clamp(240px, 40vw, 420px);
+}
+
 .page__title {
   margin: 0;
   font-size: 1.4rem;

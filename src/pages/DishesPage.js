@@ -50,6 +50,7 @@ export const DishesPage = ({
   const [ingredientForm, setIngredientForm] = useState(defaultIngredient);
   const [editingIngredient, setEditingIngredient] = useState(null);
   const [openActionMenuId, setOpenActionMenuId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const productOptions = useMemo(
     () => products.map((product) => ({ label: product.name, value: String(product.id) })),
@@ -347,6 +348,19 @@ export const DishesPage = ({
     : pendingIngredients;
   const disableIngredientActions = isExistingDish && isMutating;
   const disableGroupActions = isExistingDish && isMutating;
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+  const filteredDishes = useMemo(() => {
+    if (!normalizedSearchQuery) {
+      return dishes;
+    }
+
+    return dishes.filter((dish) => {
+      const name = dish.name?.toLowerCase() ?? '';
+      const description = dish.description?.toLowerCase() ?? '';
+
+      return name.includes(normalizedSearchQuery) || description.includes(normalizedSearchQuery);
+    });
+  }, [dishes, normalizedSearchQuery]);
 
   const toggleActionMenu = (dishId) => {
     setOpenActionMenuId((current) => (current === dishId ? null : dishId));
@@ -361,15 +375,42 @@ export const DishesPage = ({
         <Button onClick={openCreateDishModal}>Новое блюдо</Button>
       </div>
 
+      {dishes.length > 0 && (
+        <div className="page__filters">
+          <TextInput
+            type="search"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Поиск по названию или описанию"
+            aria-label="Поиск по блюдам"
+          />
+          {searchQuery && (
+            <Button variant="ghost" onClick={() => setSearchQuery('')}>
+              Очистить
+            </Button>
+          )}
+        </div>
+      )}
+
       {dishes.length === 0 ? (
         <EmptyState
           title="Список блюд пуст"
           description="Добавьте любимые рецепты и планируйте меню в один клик."
           action={<Button onClick={openCreateDishModal}>Добавить блюдо</Button>}
         />
+      ) : filteredDishes.length === 0 ? (
+        <EmptyState
+          title="Блюда не найдены"
+          description="Не удалось найти блюда по этому запросу. Попробуйте изменить поисковый текст."
+          action={
+            <Button variant="ghost" onClick={() => setSearchQuery('')}>
+              Сбросить поиск
+            </Button>
+          }
+        />
       ) : (
         <div className="stack">
-          {dishes.map((dish) => (
+          {filteredDishes.map((dish) => (
             <Card
               key={dish.id}
               className="dish-card"
