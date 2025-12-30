@@ -67,13 +67,20 @@ export const MealGroupDetailPage = ({
     );
   }
 
+  const description = useMemo(() => {
+    if (!mealGroup?.description) return null;
+
+    const normalized = mealGroup.description.trim();
+    return normalized.length > 60 ? `${normalized.slice(0, 57)}…` : normalized;
+  }, [mealGroup?.description]);
+
   return (
     <div className="page">
       <div className="page__header">
         <div className="page__breadcrumbs">
           <button type="button" className="link-button" onClick={onBack}>← Назад к наборам</button>
           <h2 className="page__title">{mealGroup.name}</h2>
-          {mealGroup.description && <p className="muted">{mealGroup.description}</p>}
+          {description && <p className="muted">{description}</p>}
         </div>
 
         <Button
