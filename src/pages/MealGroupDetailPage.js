@@ -76,7 +76,14 @@ export const MealGroupDetailPage = ({
           {mealGroup.description && <p className="muted">{mealGroup.description}</p>}
         </div>
 
-        <Button onClick={openAssignDishModal}>Добавить блюдо</Button>
+        <Button
+          onClick={openAssignDishModal}
+          className="meal-group__add-button"
+          aria-label="Добавить блюдо"
+        >
+          <span className="meal-group__add-label">Добавить блюдо</span>
+          <span className="meal-group__add-icon" aria-hidden>+</span>
+        </Button>
       </div>
 
       <div className="section">
@@ -137,7 +144,16 @@ export const MealGroupDetailPage = ({
           <EmptyState
             title="Блюд пока нет"
             description="Добавьте первые блюда в этот набор, чтобы перейти к планированию."
-            action={<Button onClick={openAssignDishModal}>Добавить блюдо</Button>}
+            action={(
+              <Button
+                onClick={openAssignDishModal}
+                className="meal-group__add-button"
+                aria-label="Добавить блюдо"
+              >
+                <span className="meal-group__add-label">Добавить блюдо</span>
+                <span className="meal-group__add-icon" aria-hidden>+</span>
+              </Button>
+            )}
           />
         )}
       </div>

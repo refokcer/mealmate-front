@@ -31,14 +31,20 @@
   color: var(--color-text-strong);
 }
 
-.meal-groups__add-button {
+.meal-groups__add-button,
+.meal-group__add-button {
   gap: var(--space-3xs);
 }
 
-.meal-groups__add-icon {
+.meal-groups__add-icon,
+.meal-group__add-icon {
   display: none;
   font-size: 1.1rem;
   line-height: 1;
+}
+
+.meal-group__add-label {
+  display: inline;
 }
 
 .grid {
@@ -569,16 +575,19 @@
 }
 
 @media (max-width: 540px) {
-  .meal-groups__add-button {
+  .meal-groups__add-button,
+  .meal-group__add-button {
     padding: var(--space-2xs) var(--space-sm);
     min-width: auto;
   }
 
-  .meal-groups__add-label {
+  .meal-groups__add-label,
+  .meal-group__add-label {
     display: none;
   }
 
-  .meal-groups__add-icon {
+  .meal-groups__add-icon,
+  .meal-group__add-icon {
     display: inline;
   }
 }
