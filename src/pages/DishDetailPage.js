@@ -29,7 +29,7 @@ export const DishDetailPage = ({ dish, onBack, onEditDish, onDeleteDish, isMutat
 
   return (
     <div className="page">
-      <div className="page__header">
+      <div className="page__header page__header--aligned">
         <div className="page__breadcrumbs">
           <button type="button" className="link-button" onClick={onBack}>
             ← Назад к блюдам

@@ -12,6 +12,25 @@
   flex-wrap: wrap;
 }
 
+.page__header--aligned {
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+
+.page__header--aligned .page__breadcrumbs {
+  min-width: 0;
+  flex: 1;
+}
+
+.page__header--aligned .page__title,
+.page__header--aligned .muted {
+  word-break: break-word;
+}
+
+.page__header--aligned .dish-card__actions {
+  flex-shrink: 0;
+}
+
 .page__filters {
   display: flex;
   align-items: center;
