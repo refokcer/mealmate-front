@@ -37,6 +37,13 @@ export const MealGroupDetailPage = ({
     return availableDishOptions.filter((option) => option.label.toLowerCase().includes(query));
   }, [availableDishOptions, searchTerm]);
 
+  const description = useMemo(() => {
+    if (!mealGroup?.description) return null;
+
+    const normalized = mealGroup.description.trim();
+    return normalized.length > 60 ? `${normalized.slice(0, 57)}…` : normalized;
+  }, [mealGroup?.description]);
+
   const openAssignDishModal = () => {
     setSelectedDishId('');
     setSearchTerm('');
@@ -66,13 +73,6 @@ export const MealGroupDetailPage = ({
       />
     );
   }
-
-  const description = useMemo(() => {
-    if (!mealGroup?.description) return null;
-
-    const normalized = mealGroup.description.trim();
-    return normalized.length > 60 ? `${normalized.slice(0, 57)}…` : normalized;
-  }, [mealGroup?.description]);
 
   return (
     <div className="page">
