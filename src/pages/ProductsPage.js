@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Modal } from '../components/common/Modal';
@@ -17,6 +17,8 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
   const [editingProduct, setEditingProduct] = useState(null);
   const [productForm, setProductForm] = useState(defaultProduct);
   const [productErrors, setProductErrors] = useState({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [openActionMenuId, setOpenActionMenuId] = useState(null);
 
   const openCreateModal = () => {
     setEditingProduct(null);
@@ -63,6 +65,33 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
     closeModal();
   };
 
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+  const filteredProducts = useMemo(() => {
+    if (!normalizedSearchQuery) {
+      return products;
+    }
+
+    return products.filter((product) => {
+      const name = product.name?.toLowerCase() ?? '';
+      const category = product.category?.toLowerCase() ?? '';
+      const notes = product.notes?.toLowerCase() ?? '';
+      const dishes = (product.dishes ?? []).map((item) => item.dishName?.toLowerCase() ?? '');
+
+      return (
+        name.includes(normalizedSearchQuery) ||
+        category.includes(normalizedSearchQuery) ||
+        notes.includes(normalizedSearchQuery) ||
+        dishes.some((dishName) => dishName.includes(normalizedSearchQuery))
+      );
+    });
+  }, [products, normalizedSearchQuery]);
+
+  const toggleActionMenu = (productId) => {
+    setOpenActionMenuId((current) => (current === productId ? null : productId));
+  };
+
+  const closeActionMenu = () => setOpenActionMenuId(null);
+
   return (
     <div className="page">
       <div className="page__header">
@@ -70,31 +99,76 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
         <Button onClick={openCreateModal}>Новый продукт</Button>
       </div>
 
+      {products.length > 0 && (
+        <div className="page__filters">
+          <TextInput
+            type="search"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Поиск по названию, категории или блюду"
+            aria-label="Поиск по продуктам"
+          />
+        </div>
+      )}
+
       {products.length === 0 ? (
         <EmptyState
           title="Список продуктов пуст"
           description="Добавьте продукты из холодильника и создавайте блюда быстрее."
           action={<Button onClick={openCreateModal}>Добавить продукт</Button>}
         />
+      ) : filteredProducts.length === 0 ? (
+        <EmptyState
+          title="Продукты не найдены"
+          description="Не удалось найти продукты по этому запросу. Попробуйте изменить поисковый текст."
+          action={
+            <Button variant="ghost" onClick={() => setSearchQuery('')}>
+              Сбросить поиск
+            </Button>
+          }
+        />
       ) : (
         <div className="stack">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <Card key={product.id} className="product-card">
               <CardHeader
                 title={product.name}
                 subtitle={product.category}
                 endSlot={
-                  <div className="card-action-buttons">
-                    <Button variant="ghost" onClick={() => openEditModal(product)}>
-                      Редактировать
-                    </Button>
+                  <div className="product-card__actions" onClick={(event) => event.stopPropagation()}>
                     <Button
-                      variant="danger"
-                      onClick={() => deleteProduct(product.id)}
-                      disabled={isMutating}
+                      variant="ghost"
+                      className="icon-button"
+                      onClick={() => toggleActionMenu(product.id)}
+                      aria-label={`Действия с продуктом ${product.name}`}
                     >
-                      Удалить
+                      ⚙️
                     </Button>
+                    {openActionMenuId === product.id && (
+                      <div className="product-card__menu" role="menu">
+                        <button
+                          type="button"
+                          className="product-card__menu-item"
+                          onClick={() => {
+                            closeActionMenu();
+                            openEditModal(product);
+                          }}
+                        >
+                          Редактировать
+                        </button>
+                        <button
+                          type="button"
+                          className="product-card__menu-item product-card__menu-item--danger"
+                          onClick={() => {
+                            closeActionMenu();
+                            deleteProduct(product.id);
+                          }}
+                          disabled={isMutating}
+                        >
+                          Удалить
+                        </button>
+                      </div>
+                    )}
                   </div>
                 }
               />
