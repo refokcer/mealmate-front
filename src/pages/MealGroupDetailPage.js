@@ -37,6 +37,13 @@ export const MealGroupDetailPage = ({
     return availableDishOptions.filter((option) => option.label.toLowerCase().includes(query));
   }, [availableDishOptions, searchTerm]);
 
+  const description = useMemo(() => {
+    if (!mealGroup?.description) return null;
+
+    const normalized = mealGroup.description.trim();
+    return normalized.length > 60 ? `${normalized.slice(0, 57)}…` : normalized;
+  }, [mealGroup?.description]);
+
   const openAssignDishModal = () => {
     setSelectedDishId('');
     setSearchTerm('');
@@ -73,10 +80,17 @@ export const MealGroupDetailPage = ({
         <div className="page__breadcrumbs">
           <button type="button" className="link-button" onClick={onBack}>← Назад к наборам</button>
           <h2 className="page__title">{mealGroup.name}</h2>
-          {mealGroup.description && <p className="muted">{mealGroup.description}</p>}
+          {description && <p className="muted">{description}</p>}
         </div>
 
-        <Button onClick={openAssignDishModal}>Добавить блюдо</Button>
+        <Button
+          onClick={openAssignDishModal}
+          className="meal-group__add-button"
+          aria-label="Добавить блюдо"
+        >
+          <span className="meal-group__add-label">Добавить блюдо</span>
+          <span className="meal-group__add-icon" aria-hidden>+</span>
+        </Button>
       </div>
 
       <div className="section">
@@ -137,7 +151,16 @@ export const MealGroupDetailPage = ({
           <EmptyState
             title="Блюд пока нет"
             description="Добавьте первые блюда в этот набор, чтобы перейти к планированию."
-            action={<Button onClick={openAssignDishModal}>Добавить блюдо</Button>}
+            action={(
+              <Button
+                onClick={openAssignDishModal}
+                className="meal-group__add-button"
+                aria-label="Добавить блюдо"
+              >
+                <span className="meal-group__add-label">Добавить блюдо</span>
+                <span className="meal-group__add-icon" aria-hidden>+</span>
+              </Button>
+            )}
           />
         )}
       </div>

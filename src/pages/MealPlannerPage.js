@@ -81,7 +81,12 @@ export const MealPlannerPage = ({
     <div className="page">
       <div className="page__header">
         <h2 className="page__title">Наборы приёмов пищи</h2>
-        <Button onClick={openCreateModal}>Новый набор</Button>
+        <Button onClick={openCreateModal} className="meal-groups__add-button" aria-label="Новый набор">
+          <span className="meal-groups__add-label">Новый набор</span>
+          <span className="meal-groups__add-icon" aria-hidden>
+            +
+          </span>
+        </Button>
       </div>
 
       {mealGroups.length === 0 ? (
