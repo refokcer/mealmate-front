@@ -165,7 +165,7 @@ function App() {
           />
         );
     }
-  }, [activeDish, activeGroup, dishDetailReturnView, planner, view]);
+  }, [activeDish, activeGroup, dishDetailReturnView, pendingDishEditId, planner, view]);
 
   return (
     <AppLayout
@@ -190,4 +190,3 @@ function App() {
 }
 
 export default App;
-

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Modal } from '../components/common/Modal';
@@ -87,6 +87,22 @@ export const DishesPage = ({
     return map;
   }, [mealGroups]);
 
+  const openEditDishModal = useCallback((dish) => {
+    setEditingDish(dish);
+    setDishForm({
+      name: dish.name ?? '',
+      description: dish.description ?? '',
+      instructions: dish.instructions ?? '',
+      preparationMinutes: dish.preparationMinutes ?? '',
+      imageUrl: dish.imageUrl ?? '',
+    });
+    setDishErrors({});
+    setPendingIngredients([]);
+    setSelectedGroupIds([...(dishGroupMap.get(dish.id) ?? [])]);
+    setGroupSelectValue('');
+    setDishModalOpen(true);
+  }, [dishGroupMap]);
+
   useEffect(() => {
     if (!editingDishId) {
       return;
@@ -101,7 +117,7 @@ export const DishesPage = ({
 
     openEditDishModal(dishToEdit);
     onEditingDishHandled?.();
-  }, [dishes, editingDishId, onEditingDishHandled]);
+  }, [dishes, editingDishId, onEditingDishHandled, openEditDishModal]);
 
   useEffect(() => {
     if (!editingDish) {
@@ -120,22 +136,6 @@ export const DishesPage = ({
     setDishErrors({});
     setPendingIngredients([]);
     setSelectedGroupIds([]);
-    setGroupSelectValue('');
-    setDishModalOpen(true);
-  };
-
-  const openEditDishModal = (dish) => {
-    setEditingDish(dish);
-    setDishForm({
-      name: dish.name ?? '',
-      description: dish.description ?? '',
-      instructions: dish.instructions ?? '',
-      preparationMinutes: dish.preparationMinutes ?? '',
-      imageUrl: dish.imageUrl ?? '',
-    });
-    setDishErrors({});
-    setPendingIngredients([]);
-    setSelectedGroupIds([...(dishGroupMap.get(dish.id) ?? [])]);
     setGroupSelectValue('');
     setDishModalOpen(true);
   };
@@ -795,4 +795,3 @@ export const DishesPage = ({
     </div>
   );
 };
-
