@@ -24,7 +24,10 @@ export const MealGroupDetailPage = ({
     [dishes],
   );
 
-  const selectedGroupDishIds = mealGroup?.dishes?.map((item) => item.dishId) ?? [];
+  const selectedGroupDishIds = useMemo(
+    () => mealGroup?.dishes?.map((item) => item.dishId) ?? [],
+    [mealGroup?.dishes],
+  );
   const availableDishOptions = useMemo(
     () => dishOptions.filter((option) => !selectedGroupDishIds.includes(Number(option.value))),
     [dishOptions, selectedGroupDishIds],
