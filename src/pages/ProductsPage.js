@@ -77,6 +77,7 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
 
     closeModal();
   };
+
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const filteredProducts = useMemo(() => {
     if (!normalizedSearchQuery) {
@@ -107,8 +108,8 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
   return (
     <div className="page">
       <div className="page__header">
-        <h2 className="page__title">РџСЂРѕРґСѓРєС‚С‹</h2>
-        <Button onClick={openCreateModal}>РќРѕРІС‹Р№ РїСЂРѕРґСѓРєС‚</Button>
+        <h2 className="page__title">Продукты</h2>
+        <Button onClick={openCreateModal}>Новый продукт</Button>
       </div>
 
       {products.length > 0 && (
@@ -117,25 +118,25 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
             type="search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="РџРѕРёСЃРє РїРѕ РЅР°Р·РІР°РЅРёСЋ, РєР°С‚РµРіРѕСЂРёРё РёР»Рё Р±Р»СЋРґСѓ"
-            aria-label="РџРѕРёСЃРє РїРѕ РїСЂРѕРґСѓРєС‚Р°Рј"
+            placeholder="Поиск по названию, категории или блюду"
+            aria-label="Поиск по продуктам"
           />
         </div>
       )}
 
       {products.length === 0 ? (
         <EmptyState
-          title="РЎРїРёСЃРѕРє РїСЂРѕРґСѓРєС‚РѕРІ РїСѓСЃС‚"
-          description="Р”РѕР±Р°РІСЊС‚Рµ РїСЂРѕРґСѓРєС‚С‹ РёР· С…РѕР»РѕРґРёР»СЊРЅРёРєР° Рё СЃРѕР·РґР°РІР°Р№С‚Рµ Р±Р»СЋРґР° Р±С‹СЃС‚СЂРµРµ."
-          action={<Button onClick={openCreateModal}>Р”РѕР±Р°РІРёС‚СЊ РїСЂРѕРґСѓРєС‚</Button>}
+          title="Список продуктов пуст"
+          description="Добавьте продукты из холодильника и создавайте блюда быстрее."
+          action={<Button onClick={openCreateModal}>Добавить продукт</Button>}
         />
       ) : filteredProducts.length === 0 ? (
         <EmptyState
-          title="РџСЂРѕРґСѓРєС‚С‹ РЅРµ РЅР°Р№РґРµРЅС‹"
-          description="РќРµ СѓРґР°Р»РѕСЃСЊ РЅР°Р№С‚Рё РїСЂРѕРґСѓРєС‚С‹ РїРѕ СЌС‚РѕРјСѓ Р·Р°РїСЂРѕСЃСѓ. РџРѕРїСЂРѕР±СѓР№С‚Рµ РёР·РјРµРЅРёС‚СЊ РїРѕРёСЃРєРѕРІС‹Р№ С‚РµРєСЃС‚."
+          title="Продукты не найдены"
+          description="Не удалось найти продукты по этому запросу. Попробуйте изменить поисковый текст."
           action={
             <Button variant="ghost" onClick={() => setSearchQuery('')}>
-              РЎР±СЂРѕСЃРёС‚СЊ РїРѕРёСЃРє
+              Сбросить поиск
             </Button>
           }
         />
@@ -152,9 +153,9 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
                       variant="ghost"
                       className="icon-button"
                       onClick={() => toggleActionMenu(product.id)}
-                      aria-label={`Р”РµР№СЃС‚РІРёСЏ СЃ РїСЂРѕРґСѓРєС‚РѕРј ${product.name}`}
+                      aria-label={`Действия с продуктом ${product.name}`}
                     >
-                      вљ™пёЏ
+                      ...
                     </Button>
                     {openActionMenuId === product.id && (
                       <div className="product-card__menu" role="menu">
@@ -166,7 +167,7 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
                             openEditModal(product);
                           }}
                         >
-                          Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ
+                          Редактировать
                         </button>
                         <button
                           type="button"
@@ -177,7 +178,7 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
                           }}
                           disabled={isMutating}
                         >
-                          РЈРґР°Р»РёС‚СЊ
+                          Удалить
                         </button>
                       </div>
                     )}
@@ -186,12 +187,12 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
               />
 
               <CardContent>
-                {product.notes ? <p className="multiline">{product.notes}</p> : <p className="muted">РќРµС‚ Р·Р°РјРµС‚РѕРє</p>}
+                {product.notes ? <p className="multiline">{product.notes}</p> : <p className="muted">Нет заметок</p>}
                 <p className="muted">Метрика: {product.unit || 'шт.'}</p>
 
                 <div className="product-card__dishes">
                   <div className="section-header">
-                    <h3>РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ Р±Р»СЋРґР°С…</h3>
+                    <h3>Используется в блюдах</h3>
                   </div>
                   {product.dishes?.length ? (
                     <ul className="chip-list">
@@ -203,7 +204,7 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
                       ))}
                     </ul>
                   ) : (
-                    <p className="muted">РџРѕРєР° РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РЅРё РІ РѕРґРЅРѕРј Р±Р»СЋРґРµ</p>
+                    <p className="muted">Пока не используется ни в одном блюде</p>
                   )}
                 </div>
               </CardContent>
@@ -216,32 +217,32 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
 
       <Modal
         open={isModalOpen}
-        title={editingProduct ? 'Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РїСЂРѕРґСѓРєС‚Р°' : 'РќРѕРІС‹Р№ РїСЂРѕРґСѓРєС‚'}
+        title={editingProduct ? 'Редактирование продукта' : 'Новый продукт'}
         onClose={closeModal}
         footer={
           <>
             <Button variant="ghost" onClick={closeModal} disabled={isMutating}>
-              РћС‚РјРµРЅР°
+              Отмена
             </Button>
             <Button onClick={submitProduct} disabled={isMutating}>
-              {editingProduct ? 'РЎРѕС…СЂР°РЅРёС‚СЊ' : 'Р”РѕР±Р°РІРёС‚СЊ'}
+              {editingProduct ? 'Сохранить' : 'Добавить'}
             </Button>
           </>
         }
       >
-        <FormField label="РќР°Р·РІР°РЅРёРµ" error={productErrors.name}>
+        <FormField label="Название" error={productErrors.name}>
           <TextInput
             value={productForm.name}
             onChange={(event) => setProductForm((state) => ({ ...state, name: event.target.value }))}
-            placeholder="РќР°РїСЂРёРјРµСЂ, РђРІРѕРєР°РґРѕ"
+            placeholder="Например, авокадо"
           />
         </FormField>
 
-        <FormField label="РљР°С‚РµРіРѕСЂРёСЏ" hint="РћРІРѕС‰Рё, РјРѕР»РѕС‡РЅС‹Рµ РїСЂРѕРґСѓРєС‚С‹, РєСЂСѓРїС‹ Рё С‚.Рґ.">
+        <FormField label="Категория" hint="Овощи, молочные продукты, крупы и т.д.">
           <TextInput
             value={productForm.category}
             onChange={(event) => setProductForm((state) => ({ ...state, category: event.target.value }))}
-            placeholder="РљР°С‚РµРіРѕСЂРёСЏ"
+            placeholder="Категория"
           />
         </FormField>
 
@@ -253,17 +254,16 @@ export const ProductsPage = ({ products, createProduct, updateProduct, deletePro
           />
         </FormField>
 
-        <FormField label="Р—Р°РјРµС‚РєРё" hint="РќР°РїСЂРёРјРµСЂ, РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЏ РёР»Рё СЃСЂРѕРє РіРѕРґРЅРѕСЃС‚Рё">
+        <FormField label="Заметки" hint="Например, производитель или срок годности">
           <TextInput
             multiline
             rows={4}
             value={productForm.notes}
             onChange={(event) => setProductForm((state) => ({ ...state, notes: event.target.value }))}
-            placeholder="РҐСЂР°РЅРёС‚СЊ РІ С…РѕР»РѕРґРёР»СЊРЅРёРєРµ, РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРѕ РїСЏС‚РЅРёС†С‹"
+            placeholder="Хранить в холодильнике, использовать до пятницы"
           />
         </FormField>
       </Modal>
     </div>
   );
 };
-
