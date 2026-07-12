@@ -7,6 +7,7 @@ import { MealGroupDetailPage } from './pages/MealGroupDetailPage';
 import { DishesPage } from './pages/DishesPage';
 import { DishDetailPage } from './pages/DishDetailPage';
 import { ProductsPage } from './pages/ProductsPage';
+import { ShoppingPage } from './pages/ShoppingPage';
 import { Alert } from './components/common/Alert';
 import { Button } from './components/common/Button';
 
@@ -23,6 +24,10 @@ const VIEW_CONFIG = {
     title: 'Продукты и холодильник',
     subtitle: 'MealMate',
   },
+  shopping: {
+    title: 'Планирование покупок',
+    subtitle: 'MealMate',
+  },
   groupDetail: {
     title: 'Набор приёмов пищи',
     subtitle: 'MealMate',
@@ -37,6 +42,7 @@ const NAV_ITEMS = [
   { id: 'planner', label: 'План', icon: '🗓️' },
   { id: 'dishes', label: 'Блюда', icon: '🍽️' },
   { id: 'products', label: 'Продукты', icon: '🧺' },
+  { id: 'shopping', label: 'Покупки', icon: '🛒' },
 ];
 
 function App() {
@@ -110,6 +116,24 @@ function App() {
             createProduct={planner.createProduct}
             updateProduct={planner.updateProduct}
             deleteProduct={planner.deleteProduct}
+            isMutating={planner.isMutating}
+          />
+        );
+      case 'shopping':
+        return (
+          <ShoppingPage
+            dishes={planner.dishes}
+            mealGroups={planner.mealGroups}
+            products={planner.products}
+            shoppingList={planner.shoppingList}
+            baseShoppingProducts={planner.baseShoppingProducts}
+            saveShoppingList={planner.saveShoppingList}
+            updateShoppingListItem={planner.updateShoppingListItem}
+            deleteShoppingListItem={planner.deleteShoppingListItem}
+            clearShoppingList={planner.clearShoppingList}
+            addBaseProductsToShoppingList={planner.addBaseProductsToShoppingList}
+            createBaseShoppingProduct={planner.createBaseShoppingProduct}
+            deleteBaseShoppingProduct={planner.deleteBaseShoppingProduct}
             isMutating={planner.isMutating}
           />
         );

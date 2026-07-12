@@ -21,6 +21,14 @@ const defaultIngredient = {
   isDraft: false,
 };
 
+const formatIngredientQuantity = (quantity, unit) => {
+  if (quantity === null || quantity === undefined || quantity === '') {
+    return '';
+  }
+
+  return `${quantity} ${unit || ''}`.trim();
+};
+
 export const DishesPage = ({
   dishes,
   products,
@@ -64,6 +72,16 @@ export const DishesPage = ({
 
     products.forEach((product) => {
       map.set(product.id, product.name);
+    });
+
+    return map;
+  }, [products]);
+
+  const productUnitMap = useMemo(() => {
+    const map = new Map();
+
+    products.forEach((product) => {
+      map.set(product.id, product.unit);
     });
 
     return map;
@@ -184,7 +202,7 @@ export const DishesPage = ({
         await createDishProduct({
           dishId,
           productId: ingredient.productId,
-          quantity: ingredient.quantity ? String(ingredient.quantity) : null,
+          quantity: ingredient.quantity === '' ? null : Number(ingredient.quantity),
         });
       }
     }
@@ -239,7 +257,7 @@ export const DishesPage = ({
     }
 
     const productId = Number(ingredientForm.productId);
-    const normalizedQuantity = ingredientForm.quantity?.trim() ?? '';
+    const normalizedQuantity = ingredientForm.quantity === '' ? '' : Number(ingredientForm.quantity);
 
     if (ingredientForm.isDraft || !ingredientForm.dishId) {
       if (editingIngredient) {
@@ -261,7 +279,7 @@ export const DishesPage = ({
     const payload = {
       dishId: Number(ingredientForm.dishId),
       productId,
-      quantity: normalizedQuantity ? normalizedQuantity : null,
+      quantity: normalizedQuantity === '' ? null : normalizedQuantity,
     };
 
     if (editingIngredient) {
@@ -377,6 +395,16 @@ export const DishesPage = ({
 
     return productNameMap.get(id) ?? '';
   }, [ingredientForm.productId, productNameMap]);
+
+  const selectedProductUnit = useMemo(() => {
+    const id = Number(ingredientForm.productId);
+
+    if (!id) {
+      return '';
+    }
+
+    return productUnitMap.get(id) ?? '';
+  }, [ingredientForm.productId, productUnitMap]);
 
   const availableGroupOptions = useMemo(
     () => groupOptions.filter((option) => !selectedGroupIds.includes(Number(option.value))),
@@ -523,7 +551,9 @@ export const DishesPage = ({
                         <Tag key={product.productId}>
                           <span className="ingredient-tag__name">{product.productName}</span>
                           {product.quantity && (
-                            <span className="ingredient-tag__quantity">{product.quantity}</span>
+                            <span className="ingredient-tag__quantity">
+                              {formatIngredientQuantity(product.quantity, product.unit)}
+                            </span>
                           )}
                         </Tag>
                       ))}
@@ -619,7 +649,10 @@ export const DishesPage = ({
                 const name = isExistingDish
                   ? ingredient.productName
                   : productNameMap.get(ingredient.productId) ?? 'Неизвестный продукт';
-                const quantity = ingredient.quantity;
+                const unit = isExistingDish
+                  ? ingredient.unit
+                  : productUnitMap.get(ingredient.productId);
+                const quantity = formatIngredientQuantity(ingredient.quantity, unit);
 
                 return (
                   <li key={productId} className="ingredient-list__item">
@@ -784,11 +817,14 @@ export const DishesPage = ({
           </div>
         </FormField>
 
-        <FormField label="Количество" hint="Например, 2 яйца или 150 г">
+        <FormField label="Количество" hint={selectedProductUnit ? `Метрика: ${selectedProductUnit}` : 'Выберите продукт, чтобы увидеть метрику'}>
           <TextInput
+            type="number"
+            min="0"
+            step="0.01"
             value={ingredientForm.quantity}
             onChange={(event) => setIngredientForm((state) => ({ ...state, quantity: event.target.value }))}
-            placeholder="Количество ингредиента"
+            placeholder="Только число"
           />
         </FormField>
       </Modal>

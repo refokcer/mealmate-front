@@ -4,6 +4,8 @@ import * as productsApi from '../api/products';
 import * as mealGroupsApi from '../api/mealGroups';
 import * as dishProductsApi from '../api/dishProducts';
 import * as mealGroupDishesApi from '../api/mealGroupDishes';
+import * as shoppingListApi from '../api/shoppingList';
+import * as baseShoppingProductsApi from '../api/baseShoppingProducts';
 
 const extractErrorMessage = (error) => {
   if (!error) {
@@ -35,6 +37,8 @@ export const usePlannerData = () => {
   const [mealGroups, setMealGroups] = useState([]);
   const [dishProducts, setDishProducts] = useState([]);
   const [mealGroupDishes, setMealGroupDishes] = useState([]);
+  const [shoppingList, setShoppingList] = useState([]);
+  const [baseShoppingProducts, setBaseShoppingProducts] = useState([]);
 
   const [initialLoading, setInitialLoading] = useState(true);
   const [isMutating, setIsMutating] = useState(false);
@@ -78,6 +82,18 @@ export const usePlannerData = () => {
     return data;
   }, []);
 
+  const loadShoppingList = useCallback(async () => {
+    const data = await shoppingListApi.fetchShoppingList();
+    setShoppingList(data ?? []);
+    return data;
+  }, []);
+
+  const loadBaseShoppingProducts = useCallback(async () => {
+    const data = await baseShoppingProductsApi.fetchBaseShoppingProducts();
+    setBaseShoppingProducts(data ?? []);
+    return data;
+  }, []);
+
   const loadAll = useCallback(async () => {
     setInitialLoading(true);
     clearError();
@@ -89,13 +105,15 @@ export const usePlannerData = () => {
         loadMealGroups(),
         loadDishProducts(),
         loadMealGroupDishes(),
+        loadShoppingList(),
+        loadBaseShoppingProducts(),
       ]);
     } catch (err) {
       handleError(err);
     } finally {
       setInitialLoading(false);
     }
-  }, [clearError, handleError, loadDishProducts, loadDishes, loadMealGroupDishes, loadMealGroups, loadProducts]);
+  }, [clearError, handleError, loadBaseShoppingProducts, loadDishProducts, loadDishes, loadMealGroupDishes, loadMealGroups, loadProducts, loadShoppingList]);
 
   useEffect(() => {
     loadAll();
@@ -126,6 +144,8 @@ export const usePlannerData = () => {
       mealGroups,
       dishProducts,
       mealGroupDishes,
+      shoppingList,
+      baseShoppingProducts,
       loading: initialLoading,
       error,
       isMutating,
@@ -191,8 +211,36 @@ export const usePlannerData = () => {
           [loadMealGroupDishes, loadMealGroups, loadDishes],
         );
       },
+      async saveShoppingList(items) {
+        return runMutation(() => shoppingListApi.saveShoppingList(items), [loadShoppingList]);
+      },
+      async createShoppingListItem(payload) {
+        return runMutation(() => shoppingListApi.createShoppingListItem(payload), [loadShoppingList]);
+      },
+      async updateShoppingListItem(id, payload) {
+        return runMutation(() => shoppingListApi.updateShoppingListItem(id, payload), [loadShoppingList]);
+      },
+      async deleteShoppingListItem(id) {
+        return runMutation(() => shoppingListApi.deleteShoppingListItem(id), [loadShoppingList]);
+      },
+      async clearShoppingList() {
+        return runMutation(() => shoppingListApi.clearShoppingList(), [loadShoppingList]);
+      },
+      async addBaseProductsToShoppingList() {
+        return runMutation(() => shoppingListApi.addBaseProductsToShoppingList(), [loadShoppingList]);
+      },
+      async createBaseShoppingProduct(payload) {
+        return runMutation(() => baseShoppingProductsApi.createBaseShoppingProduct(payload), [loadBaseShoppingProducts]);
+      },
+      async updateBaseShoppingProduct(id, payload) {
+        return runMutation(() => baseShoppingProductsApi.updateBaseShoppingProduct(id, payload), [loadBaseShoppingProducts]);
+      },
+      async deleteBaseShoppingProduct(id) {
+        return runMutation(() => baseShoppingProductsApi.deleteBaseShoppingProduct(id), [loadBaseShoppingProducts]);
+      },
     }),
     [
+      baseShoppingProducts,
       clearError,
       dishProducts,
       dishes,
@@ -200,15 +248,18 @@ export const usePlannerData = () => {
       initialLoading,
       isMutating,
       loadAll,
+      loadBaseShoppingProducts,
       loadDishProducts,
       loadDishes,
       loadMealGroupDishes,
       loadMealGroups,
       loadProducts,
+      loadShoppingList,
       mealGroupDishes,
       mealGroups,
       products,
       runMutation,
+      shoppingList,
     ],
   );
 

@@ -4,6 +4,14 @@ import { Tag } from '../components/common/Tag';
 import { EmptyState } from '../components/common/EmptyState';
 import { Button } from '../components/common/Button';
 
+const formatIngredientQuantity = (quantity, unit) => {
+  if (quantity === null || quantity === undefined || quantity === '') {
+    return '';
+  }
+
+  return `${quantity} ${unit || ''}`.trim();
+};
+
 export const DishDetailPage = ({ dish, onBack, onEditDish, onDeleteDish, isMutating }) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
 
@@ -122,7 +130,9 @@ export const DishDetailPage = ({ dish, onBack, onEditDish, onDeleteDish, isMutat
                       <Tag key={product.productId}>
                         <span className="ingredient-tag__name">{product.productName}</span>
                         {product.quantity && (
-                          <span className="ingredient-tag__quantity">{product.quantity}</span>
+                          <span className="ingredient-tag__quantity">
+                            {formatIngredientQuantity(product.quantity, product.unit)}
+                          </span>
                         )}
                       </Tag>
                     ))}

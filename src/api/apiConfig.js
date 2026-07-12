@@ -8,6 +8,8 @@ export const apiConfig = {
     mealGroups: '/meal-groups',
     dishProducts: '/dish-products',
     mealGroupDishes: '/meal-group-dishes',
+    shoppingList: '/shopping-list',
+    baseShoppingProducts: '/base-shopping-products',
   },
 };
 
